@@ -1,18 +1,21 @@
-// File: src/App.jsx
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import StudentList from "./components/StudentList";
+import AddStudent from "./components/AddStudent";
 
+// src/App.jsx
 function App() {
   return (
-    <BrowserRouter>
+   <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/students" element={<StudentList />} /> 
+        <Route path="/students" element={<StudentList />} />
+        <Route path="/add-student" element={<AddStudent />} />
       </Routes>
-    </BrowserRouter>
+   </BrowserRouter>
+
   );
 }
 

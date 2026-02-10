@@ -1,9 +1,12 @@
 package com.bodhiraja.bodhiraja.student.controller;
 
+import com.bodhiraja.bodhiraja.academic.dao.GradeRepository;
+import com.bodhiraja.bodhiraja.guardian.dao.GuardianRepository;
 import com.bodhiraja.bodhiraja.student.Student;
 import com.bodhiraja.bodhiraja.student.StudentStatus;
 import com.bodhiraja.bodhiraja.student.dao.StudentRepository;
 import com.bodhiraja.bodhiraja.student.dao.StudentStatusRepository;
+import com.bodhiraja.bodhiraja.user.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +31,12 @@ public class StudentController {
     // --- 2. Student Status (Active, Left School, etc.) ---
     @Autowired
     private StudentStatusRepository studentStatusDao;
+    @Autowired
+    private GradeRepository gradeDao;
+    @Autowired
+    private GuardianRepository guardianDao;
+    @Autowired
+    private UserRepository userDao;
 
     // --- 2. SOFT DELETE (The Magic Trick) ---
     @DeleteMapping(value = "/delete/{id}")
@@ -55,6 +64,25 @@ public class StudentController {
         studentDao.save(student);
 
         return "Success: Student marked as Deleted";
+    }
+
+    // --- 3. ADD NEW STUDENT (The POST Method) ---
+    @PostMapping(value = "/add") // This creates the URL: http://localhost:8080/student/add
+    public String addStudent(@RequestBody Student student) {
+
+        student.setGrade(gradeDao.findById(1).orElse(null));
+        student.setStudentStatus(studentStatusDao.findById(1).orElse(null));
+        student.setGuardian(guardianDao.findById(1).orElse(null));
+        student.setUser(userDao.findById(2).orElse(null));
+
+        // 1. We receive the "student" object from React (JSON format)
+        // 2. We save it to the database
+        try {
+            studentDao.save(student);
+            return "Saved Successfully";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
     }
 
     // --- 3. HELPER: Get Statuses (For dropdowns later) ---
