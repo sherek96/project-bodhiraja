@@ -2,10 +2,15 @@ package com.bodhiraja.bodhiraja.attendance;
 
 import com.bodhiraja.bodhiraja.academic.ClassDetails;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Data
 @Table(name = "attendance")

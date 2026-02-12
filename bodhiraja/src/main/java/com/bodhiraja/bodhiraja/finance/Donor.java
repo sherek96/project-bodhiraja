@@ -2,9 +2,14 @@ package com.bodhiraja.bodhiraja.finance;
 
 import com.bodhiraja.bodhiraja.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Data
 @Table(name = "donor")

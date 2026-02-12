@@ -2,11 +2,16 @@ package com.bodhiraja.bodhiraja.finance;
 
 import com.bodhiraja.bodhiraja.student.Student;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Data
 @Table(name = "transaction_income")

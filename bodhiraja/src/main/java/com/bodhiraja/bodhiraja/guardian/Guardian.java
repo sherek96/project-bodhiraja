@@ -2,9 +2,14 @@ package com.bodhiraja.bodhiraja.guardian;
 
 import com.bodhiraja.bodhiraja.user.User; // Import your User entity
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Data
 @Table(name = "guardian")

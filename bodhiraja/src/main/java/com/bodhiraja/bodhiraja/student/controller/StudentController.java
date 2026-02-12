@@ -6,6 +6,8 @@ import com.bodhiraja.bodhiraja.student.Student;
 import com.bodhiraja.bodhiraja.student.StudentStatus;
 import com.bodhiraja.bodhiraja.student.dao.StudentRepository;
 import com.bodhiraja.bodhiraja.student.dao.StudentStatusRepository;
+import com.bodhiraja.bodhiraja.student.dao.StudentTypeRepository;
+import com.bodhiraja.bodhiraja.student.StudentType;
 import com.bodhiraja.bodhiraja.user.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,10 @@ public class StudentController {
     // --- 1. Student Profiles (Personal Details) ---
     @Autowired
     private StudentRepository studentDao;
+    // --- 2. Student Status (Active, Left School, etc.) ---
+    @Autowired
+    private StudentStatusRepository studentStatusDao;
+
 
     @GetMapping(value = "/all", produces = "application/json")
     public List<Student> getAllStudents() {
@@ -28,15 +34,6 @@ public class StudentController {
         // NEW: Only get students where status is "Active"
         return studentDao.findByStudentStatus_Name("Active");
     }
-    // --- 2. Student Status (Active, Left School, etc.) ---
-    @Autowired
-    private StudentStatusRepository studentStatusDao;
-    @Autowired
-    private GradeRepository gradeDao;
-    @Autowired
-    private GuardianRepository guardianDao;
-    @Autowired
-    private UserRepository userDao;
 
     // --- 2. SOFT DELETE (The Magic Trick) ---
     @DeleteMapping(value = "/delete/{id}")
@@ -70,16 +67,35 @@ public class StudentController {
     @PostMapping(value = "/add") // This creates the URL: http://localhost:8080/student/add
     public String addStudent(@RequestBody Student student) {
 
-        student.setGrade(gradeDao.findById(1).orElse(null));
-        student.setStudentStatus(studentStatusDao.findById(1).orElse(null));
-        student.setGuardian(guardianDao.findById(1).orElse(null));
-        student.setUser(userDao.findById(2).orElse(null));
-
-        // 1. We receive the "student" object from React (JSON format)
-        // 2. We save it to the database
         try {
             studentDao.save(student);
             return "Saved Successfully";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    // --- 4. UPDATE STUDENT (The PUT Method) ---
+    @PutMapping(value = "/update")
+    public String updateStudent(@RequestBody Student student) {
+        // 1. Check if ID exists (Crucial for Update)
+        if (student.getId() == null) {
+            return "Error: Student ID is missing. Cannot update.";
+        }
+
+        // 2. Check if the student actually exists in DB
+        Optional<Student> existingRecord = studentDao.findById(student.getId());
+        if (!existingRecord.isPresent()) {
+            return "Error: Student with ID " + student.getId() + " does not exist.";
+        }
+
+        // 3. PRESERVE CRITICAL DATA (The Safety Step)
+        // If the frontend didn't send the User or AddDate, we copy it from the database
+
+        try {
+            // 4. Perform the Update
+            studentDao.save(student);
+            return "Updated Successfully";
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }

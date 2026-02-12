@@ -4,10 +4,15 @@ import com.bodhiraja.bodhiraja.academic.Grade;
 import com.bodhiraja.bodhiraja.guardian.Guardian; // Import Guardian
 import com.bodhiraja.bodhiraja.user.User;         // Import User
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "student")
@@ -32,9 +37,6 @@ public class Student {
     @Column(nullable = false)
     private LocalDate dob;
 
-    @Column(nullable = false, length = 45)
-    private String type; // e.g., "Scholarship", "Paying"
-
     @Column(columnDefinition = "TEXT")
     private String note;
 
@@ -49,12 +51,17 @@ public class Student {
     private StudentStatus studentStatus;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "student_type_id")
+    private StudentType studentType;
+
+    @ManyToOne(optional = false)
     @JoinColumn(name = "guardian_id") // Links to the Guardian module
     private Guardian guardian;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id") // Who added this student?
     private User user;
+
 
     // --- AUDIT FIELDS ---
     @Column(name = "adddate", nullable = false, updatable = false)

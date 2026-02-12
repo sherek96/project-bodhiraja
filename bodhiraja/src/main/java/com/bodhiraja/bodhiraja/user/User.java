@@ -2,12 +2,16 @@ package com.bodhiraja.bodhiraja.user;
 
 import com.bodhiraja.bodhiraja.employee.Employee; // Import the Employee we just made!
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.time.LocalDateTime;
 import com.bodhiraja.bodhiraja.privilege.Role;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user")
 public class User {
 

@@ -2,8 +2,12 @@ package com.bodhiraja.bodhiraja.attendance;
 
 import com.bodhiraja.bodhiraja.student.Student;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Data
 @Table(name = "attendance_has_student")
