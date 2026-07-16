@@ -2,7 +2,9 @@ package com.pirivena_project.pirivena.modal;
 
 import com.pirivena_project.pirivena.enums.StudentStatus;
 import com.pirivena_project.pirivena.enums.StudentType;
+import com.pirivena_project.pirivena.enums.GuardianRelationship;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,5 +55,11 @@ public class Student extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guardian_id")
+    @JsonIgnoreProperties({"nic", "dob", "gender", "phonePrimary", "whatsappNumber", "email", "address", "createdBy", "updatedBy"})
     private Guardian guardian;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "guardian_relationship", nullable = false)
+    private GuardianRelationship guardianRelationship = GuardianRelationship.OTHER;
+
 }

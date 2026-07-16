@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import com.pirivena_project.pirivena.enums.StudentType;
+import com.pirivena_project.pirivena.enums.GuardianRelationship;
 
 @Service
 public class StudentService {
@@ -79,6 +80,7 @@ public class StudentService {
         // 3. Set Auditing Defaults
         student.setAdmissionNo(nextStudentNo);
         student.setStatus(StudentStatus.ACTIVE);
+        if (student.getGuardianRelationship() == null) student.setGuardianRelationship(GuardianRelationship.OTHER);
 
         // 4. Save and return
         return studentRepository.save(student);
@@ -106,6 +108,7 @@ public class StudentService {
         existingStudent.setStudentType(student.getStudentType());
         existingStudent.setJoinDate(student.getJoinDate());
         existingStudent.setGuardian(student.getGuardian());
+        existingStudent.setGuardianRelationship(student.getGuardianRelationship());
         existingStudent.setOrdinationName(student.getOrdinationName());
         existingStudent.setPreviousSchool(student.getPreviousSchool());
 
@@ -158,6 +161,9 @@ public class StudentService {
         }
         if (student.getGuardian() == null || student.getGuardian().getId() == null) {
             throw new RuntimeException("An active guardian must be selected");
+        }
+        if (student.getGuardianRelationship() == null) {
+            throw new RuntimeException("The guardian relationship is required");
         }
         if (student.getPreviousSchool() == null || student.getPreviousSchool().isBlank()) {
             throw new RuntimeException("Previous school or Pirivena is required");

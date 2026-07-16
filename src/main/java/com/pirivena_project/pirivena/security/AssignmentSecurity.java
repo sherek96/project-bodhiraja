@@ -36,6 +36,10 @@ public class AssignmentSecurity {
                         || authority.getAuthority().equals("ROLE_VICEPRINCIPAL"));
     }
 
+    public boolean canViewSensitiveGuardianData(Authentication authentication) {
+        return privileged(authentication);
+    }
+
     private Integer employeeId(Authentication authentication) {
         return userRepository.findByUsername(authentication.getName())
                 .map(User::getEmployee)
