@@ -50,9 +50,14 @@ public class EnumController {
         return ResponseEntity.ok(Arrays.asList(GuardianStatus.values()));
     }
 
+    @GetMapping("/guardian-relationships")
+    public ResponseEntity<List<GuardianRelationship>> getGuardianRelationships() {
+        return ResponseEntity.ok(Arrays.asList(GuardianRelationship.values()));
+    }
+
     @GetMapping("/genders")
     public ResponseEntity<List<Gender>> getGenders() {
         return ResponseEntity.ok(Arrays.asList(Gender.values()));
     }
-}
 
+}

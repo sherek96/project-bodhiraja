@@ -27,21 +27,24 @@ public class Guardian extends BaseEntity {
     @Column(name = "title") // e.g., "Ven.", "Mr.", "Ms."
     private Title title;
 
-    @Column(name = "nic", unique = true)
+    @Column(name = "nic", unique = true, nullable = false)
     private String nic;
 
-    @Column(name = "dob")
+    @Column(name = "dob", nullable = false)
     private LocalDate dob;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = false)
     private Gender gender;
 
     @Column(name = "phone_primary", nullable = false)
     private String phonePrimary;
 
-    @Column(name = "phone_secondary")
-    private String phoneSecondary;
+    @Column(name = "whatsapp_number", length = 10)
+    private String whatsappNumber;
+
+    @Column(name = "email", length = 150)
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(name="status")
