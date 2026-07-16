@@ -1,0 +1,38 @@
+package com.pirivena_project.pirivena.config;
+
+import com.pirivena_project.pirivena.modal.User;
+import com.pirivena_project.pirivena.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 1. Check MySQL for the user trying to authenticate
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        // 2. Translate and return the database data into Spring's native UserDetails container
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword()) // This expects the hashed password from the DB
+
+                // Map your roles straight into SimpleGrantedAuthority containers.
+                // Because they already have "ROLE_ADMIN", "ROLE_PRINCIPAL", etc., no modifications are needed!
+                .authorities(user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName()))
+                        .collect(Collectors.toList()))
+                .build();
+    }
+}
