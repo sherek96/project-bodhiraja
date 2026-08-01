@@ -23,6 +23,10 @@ public class Enrollment extends BaseEntity {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private EnrollmentStatus status = EnrollmentStatus.ACTIVE;
+
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;

@@ -9,6 +9,12 @@ import com.pirivena_project.pirivena.modal.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
 import com.pirivena_project.pirivena.modal.User;
 import com.pirivena_project.pirivena.modal.Role;
 import com.pirivena_project.pirivena.repository.RoleRepository;
@@ -36,6 +42,81 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public Page<User> searchUsers(String search, Boolean active, String role, String accountType,
+                                  String profileStatus, String currentUsername, int page, int size,
+                                  String sortField, boolean descending) {
+        Specification<User> specification = userSpecification(search, active, role, accountType,
+                profileStatus, currentUsername, sortField, descending);
+        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, Math.min(size, 100)));
+        return userRepository.findAll(specification, pageable);
+    }
+
+    public long countUsers(String search, Boolean active, String role, String accountType,
+                           String profileStatus, String currentUsername) {
+        return userRepository.count(userSpecification(search, active, role, accountType,
+                profileStatus, currentUsername, "username", false));
+    }
+
+    private Specification<User> userSpecification(String search, Boolean active, String role, String accountType,
+                                                   String profileStatus, String currentUsername, String sortField,
+                                                   boolean descending) {
+        return (root, query, criteria) -> {
+            var employee = root.join("employee", JoinType.LEFT);
+            var student = root.join("student", JoinType.LEFT);
+            var predicates = new java.util.ArrayList<jakarta.persistence.criteria.Predicate>();
+
+            if (currentUsername != null && !currentUsername.isBlank()) {
+                predicates.add(criteria.notEqual(root.get("username"), currentUsername));
+            }
+            if (search != null && !search.isBlank()) {
+                String pattern = "%" + search.trim().toLowerCase() + "%";
+                predicates.add(criteria.or(
+                        criteria.like(criteria.lower(root.get("username")), pattern),
+                        criteria.like(criteria.lower(employee.get("fullName")), pattern),
+                        criteria.like(criteria.lower(employee.get("empNo")), pattern),
+                        criteria.like(criteria.lower(student.get("fullName")), pattern),
+                        criteria.like(criteria.lower(student.get("admissionNo")), pattern)));
+            }
+            if (active != null) predicates.add(criteria.equal(root.get("isActive"), active));
+            if (role != null && !role.isBlank()) {
+                predicates.add(criteria.equal(root.join("roles", JoinType.LEFT).get("name"), role));
+                query.distinct(true);
+            }
+            if (accountType != null && !accountType.isBlank()) {
+                switch (accountType.toUpperCase()) {
+                    case "EMPLOYEE" -> predicates.add(criteria.isNotNull(employee.get("id")));
+                    case "STUDENT" -> predicates.add(criteria.isNotNull(student.get("id")));
+                    case "UNLINKED" -> predicates.add(criteria.and(criteria.isNull(employee.get("id")), criteria.isNull(student.get("id"))));
+                    default -> { }
+                }
+            }
+            if (profileStatus != null && !profileStatus.isBlank()) {
+                var statusPredicates = new java.util.ArrayList<jakarta.persistence.criteria.Predicate>();
+                try { statusPredicates.add(criteria.equal(employee.get("status"), EmployeeStatus.valueOf(profileStatus))); }
+                catch (IllegalArgumentException ignored) { }
+                try { statusPredicates.add(criteria.equal(student.get("status"), StudentStatus.valueOf(profileStatus))); }
+                catch (IllegalArgumentException ignored) { }
+                predicates.add(statusPredicates.isEmpty() ? criteria.disjunction() : criteria.or(statusPredicates.toArray(jakarta.persistence.criteria.Predicate[]::new)));
+            }
+
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                jakarta.persistence.criteria.Expression<?> expression = switch (sortField == null ? "username" : sortField) {
+                    case "ownerName" -> criteria.coalesce(employee.get("fullName"), student.get("fullName"));
+                    case "registryId" -> criteria.coalesce(employee.get("empNo"), student.get("admissionNo"));
+                    case "accountType" -> criteria.<String>selectCase()
+                            .when(criteria.isNotNull(employee.get("id")), "EMPLOYEE")
+                            .when(criteria.isNotNull(student.get("id")), "STUDENT")
+                            .otherwise("UNLINKED");
+                    case "createdAt" -> root.get("createdAt");
+                    default -> root.get("username");
+                };
+                Order order = descending ? criteria.desc(expression) : criteria.asc(expression);
+                query.orderBy(order, criteria.asc(root.get("id")));
+            }
+            return criteria.and(predicates.toArray(jakarta.persistence.criteria.Predicate[]::new));
+        };
     }
 
     public User getUserById(Integer id) {

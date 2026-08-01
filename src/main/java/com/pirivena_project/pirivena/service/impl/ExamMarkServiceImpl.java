@@ -2,7 +2,10 @@ package com.pirivena_project.pirivena.service.impl;
 
 import com.pirivena_project.pirivena.modal.ExamMark;
 import com.pirivena_project.pirivena.repository.ExamMarkRepository;
+import com.pirivena_project.pirivena.repository.EnrollmentRepository;
 import com.pirivena_project.pirivena.service.ExamMarkService;
+import com.pirivena_project.pirivena.service.AcademicYearLifecycleGuard;
+import com.pirivena_project.pirivena.modal.Enrollment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,8 @@ import java.util.List;
 public class ExamMarkServiceImpl implements ExamMarkService {
 
     private final ExamMarkRepository examMarkRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final AcademicYearLifecycleGuard lifecycleGuard;
 
     @Override
     @Transactional // Ensures all marks pass validation before any are committed to the database
@@ -22,6 +27,24 @@ public class ExamMarkServiceImpl implements ExamMarkService {
         List<ExamMark> savedMarks = new ArrayList<>();
 
         for (ExamMark mark : examMarkList) {
+            if (mark == null || mark.getEnrollment() == null || mark.getEnrollment().getId() == null) {
+                throw new IllegalArgumentException("Every examination mark must reference an enrollment.");
+            }
+            if (mark.getId() != null) {
+                ExamMark existing = examMarkRepository.findById(mark.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Examination mark does not exist."));
+                lifecycleGuard.requireOperational(
+                        existing.getEnrollment().getClassroom().getAcademicYear(), "Editing examination marks");
+                if (!existing.getEnrollment().getId().equals(mark.getEnrollment().getId())) {
+                    throw new IllegalArgumentException("An examination mark cannot be transferred to another enrollment.");
+                }
+            }
+            Enrollment enrollment = enrollmentRepository.findById(mark.getEnrollment().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("The examination enrollment does not exist."));
+            lifecycleGuard.requireOperational(
+                    enrollment.getClassroom().getAcademicYear(), "Recording examination marks");
+            mark.setEnrollment(enrollment);
+
             // Rule 1: Validate Term Boundaries
             if (mark.getTermNumber() < 1 || mark.getTermNumber() > 3) {
                 throw new RuntimeException("Validation Error: Term number must be 1, 2, or 3. Received: " + mark.getTermNumber());

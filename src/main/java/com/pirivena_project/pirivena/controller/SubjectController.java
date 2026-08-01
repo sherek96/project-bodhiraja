@@ -42,10 +42,10 @@ public class SubjectController {
         return ResponseEntity.ok(subject);
     }
 
-    // 4. Delete a subject from the master inventory
+    // 4. Archive a subject while retaining curriculum history
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSubject(@PathVariable Integer id) {
         subjectService.deleteSubject(id);
-        return ResponseEntity.ok("Success: Subject record has been securely cleared from the curriculum repository.");
+        return ResponseEntity.ok("Success: Subject record has been archived and its academic history retained.");
     }
 }

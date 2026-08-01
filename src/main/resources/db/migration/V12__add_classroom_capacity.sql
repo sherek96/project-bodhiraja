@@ -1,0 +1,2 @@
+ALTER TABLE classroom
+    ADD COLUMN capacity INT NOT NULL DEFAULT 40;

@@ -3,6 +3,8 @@ package com.pirivena_project.pirivena.controller;
 import com.pirivena_project.pirivena.modal.Classroom;
 import com.pirivena_project.pirivena.service.ClassroomService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
+import com.pirivena_project.pirivena.service.ClassroomRosterService;
+import com.pirivena_project.pirivena.dto.ClassroomRosterResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ public class ClassroomController {
 
     private final ClassroomService classroomService;
     private final AssignmentSecurity assignmentSecurity;
+    private final ClassroomRosterService classroomRosterService;
 
     // 1. Create or Update a Classroom container
     @PostMapping
@@ -48,10 +51,16 @@ public class ClassroomController {
         return ResponseEntity.ok(classroom);
     }
 
-    // 5. Delete a classroom container shell
+    @GetMapping("/{id}/roster")
+    @org.springframework.security.access.prepost.PreAuthorize("@assignmentSecurity.classroomParticipant(#id, authentication)")
+    public ResponseEntity<ClassroomRosterResponse> getClassroomRoster(@PathVariable Integer id) {
+        return ResponseEntity.ok(classroomRosterService.getRoster(id));
+    }
+
+    // 5. Archive a planned classroom while retaining its record
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClassroom(@PathVariable Integer id) {
         classroomService.deleteClassroom(id);
-        return ResponseEntity.ok("Success: Classroom container has been securely purged from the repository.");
+        return ResponseEntity.ok("Success: Classroom has been archived without deleting historical data.");
     }
 }

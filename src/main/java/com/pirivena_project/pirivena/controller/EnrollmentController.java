@@ -40,10 +40,10 @@ public class EnrollmentController {
         return ResponseEntity.ok(assignmentSecurity.visibleEnrollments(enrollments, authentication));
     }
 
-    // 4. Delete an enrollment record (e.g., student leaves or error correction)
+    // 4. Withdraw an active enrollment without deleting its history
     @DeleteMapping("/{id}")
     public ResponseEntity<String> cancelEnrollment(@PathVariable Integer id) {
         enrollmentService.cancelEnrollment(id);
-        return ResponseEntity.ok("Success: Student enrollment record has been cleanly revoked.");
+        return ResponseEntity.ok("Success: Student enrollment has been marked as withdrawn.");
     }
 }

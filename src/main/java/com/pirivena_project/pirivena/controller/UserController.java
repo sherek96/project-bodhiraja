@@ -16,6 +16,7 @@ import java.security.Principal; // NEW: For capturing the active JWT identity co
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import com.pirivena_project.pirivena.dto.UserPageResponse;
 
 @RestController
 @RequestMapping("api/users")
@@ -28,11 +29,30 @@ public class UserController {
     private UserRepository userRepository; // NEW: Added to allow direct self-identity lookups via username
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(Principal principal) {
-        List<User> visibleUsers = userService.getAllUsers().stream()
-                .filter(user -> principal == null || !user.getUsername().equals(principal.getName()))
-                .toList();
-        return new ResponseEntity<>(visibleUsers, HttpStatus.OK);
+    public ResponseEntity<UserPageResponse> getAllUsers(
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String accountType,
+            @RequestParam(required = false) String profileStatus,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "username,asc") String sort,
+            Principal principal) {
+        String[] sortParts = sort.split(",", 2);
+        boolean descending = sortParts.length > 1 && "desc".equalsIgnoreCase(sortParts[1]);
+        String currentUsername = principal == null ? null : principal.getName();
+        var result = userService.searchUsers(search, active, role, accountType, profileStatus, currentUsername,
+                page, size, sortParts[0], descending);
+        Map<String, Long> summary = Map.of(
+                "total", userService.countUsers(search, null, role, accountType, profileStatus, currentUsername),
+                "active", userService.countUsers(search, true, role, accountType, profileStatus, currentUsername),
+                "inactive", userService.countUsers(search, false, role, accountType, profileStatus, currentUsername),
+                "employees", userService.countUsers(search, active, role, "EMPLOYEE", profileStatus, currentUsername),
+                "students", userService.countUsers(search, active, role, "STUDENT", profileStatus, currentUsername),
+                "unlinked", userService.countUsers(search, active, role, "UNLINKED", profileStatus, currentUsername));
+        return ResponseEntity.ok(new UserPageResponse(result.getContent(), result.getTotalElements(), result.getTotalPages(),
+                result.getNumber(), result.getSize(), summary));
     }
 
     @GetMapping("/me")
