@@ -1,6 +1,7 @@
 package com.pirivena_project.pirivena.service.impl;
 
 import com.pirivena_project.pirivena.modal.Subject;
+import com.pirivena_project.pirivena.modal.SubjectStatus;
 import com.pirivena_project.pirivena.repository.SubjectRepository;
 import com.pirivena_project.pirivena.service.SubjectService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,15 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     @Transactional
     public Subject saveSubject(Subject subject) {
+        if (subject == null || subject.getName() == null || subject.getName().isBlank()
+                || subject.getCode() == null || subject.getCode().isBlank()) {
+            throw new IllegalArgumentException("Subject name and code are required.");
+        }
+        Subject existing = subject.getId() == null ? null : subjectRepository.findById(subject.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Subject record was not found."));
+        if (existing != null && existing.getStatus() == SubjectStatus.ARCHIVED) {
+            throw new IllegalStateException("Archived subjects are read-only.");
+        }
         // Validation Rule: Enforce curriculum unique constraints before writing to the DB
         subjectRepository.findByName(subject.getName()).ifPresent(s -> {
             if (!s.getId().equals(subject.getId())) {
@@ -30,7 +40,16 @@ public class SubjectServiceImpl implements SubjectService {
             }
         });
 
-        return subjectRepository.save(subject);
+        if (existing == null) {
+            subject.setStatus(SubjectStatus.ACTIVE);
+            return subjectRepository.save(subject);
+        }
+        existing.setName(subject.getName().trim());
+        existing.setCode(subject.getCode().trim());
+        if (subject.getStatus() != null && subject.getStatus() != SubjectStatus.ARCHIVED) {
+            existing.setStatus(subject.getStatus());
+        }
+        return subjectRepository.save(existing);
     }
 
     @Override
@@ -47,9 +66,10 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     @Transactional
     public void deleteSubject(Integer id) {
-        if (!subjectRepository.existsById(id)) {
-            throw new RuntimeException("Data Deletion Error: Cannot delete target record. Subject ID " + id + " does not exist.");
-        }
-        subjectRepository.deleteById(id);
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Data Archival Error: Subject ID " + id + " does not exist."));
+        subject.setStatus(SubjectStatus.ARCHIVED);
+        subjectRepository.save(subject);
     }
 }

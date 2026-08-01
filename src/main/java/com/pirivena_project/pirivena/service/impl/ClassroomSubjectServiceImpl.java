@@ -3,8 +3,8 @@ package com.pirivena_project.pirivena.service.impl;
 import com.pirivena_project.pirivena.modal.ClassroomSubject;
 import com.pirivena_project.pirivena.repository.ClassroomSubjectRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
-import com.pirivena_project.pirivena.repository.AcademicYearRepository;
 import com.pirivena_project.pirivena.service.ClassroomSubjectService;
+import com.pirivena_project.pirivena.service.AcademicYearLifecycleGuard;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,29 +16,35 @@ public class ClassroomSubjectServiceImpl implements ClassroomSubjectService {
 
     private final ClassroomSubjectRepository classroomSubjectRepository;
     private final ClassroomRepository classroomRepository;
-    private final AcademicYearRepository academicYearRepository;
+    private final AcademicYearLifecycleGuard lifecycleGuard;
 
     @Override
     @Transactional
     public ClassroomSubject saveClassroomSubject(ClassroomSubject classroomSubject) {
+        if (classroomSubject.getId() != null) {
+            ClassroomSubject existing = classroomSubjectRepository.findById(classroomSubject.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Validation Error: Subject allocation does not exist."));
+            lifecycleGuard.requireStructureEditable(
+                    existing.getClassroom().getAcademicYear(), "Editing a classroom subject allocation");
+        }
         if (classroomSubject.getClassroom() == null || classroomSubject.getClassroom().getId() == null) {
             throw new IllegalArgumentException("Validation Error: A classroom must be selected.");
+        }
+        if (classroomSubject.getSubject() == null || classroomSubject.getSubject().getId() == null) {
+            throw new IllegalArgumentException("Validation Error: A subject must be selected.");
         }
 
         Integer classroomId = classroomSubject.getClassroom().getId();
         Integer subjectId = classroomSubject.getSubject().getId();
 
-        var activeYear = academicYearRepository.findByIsCurrentTrue()
-                .orElseThrow(() -> new IllegalStateException("Validation Error: No current academic year is configured."));
         var verifiedClassroom = classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new IllegalArgumentException("Validation Error: The selected classroom does not exist."));
-        if (!verifiedClassroom.getAcademicYear().getId().equals(activeYear.getId())) {
-            throw new IllegalStateException("Validation Error: Subjects can only be assigned to current academic year classrooms.");
-        }
+        lifecycleGuard.requireStructureEditable(
+                verifiedClassroom.getAcademicYear(), "Creating or editing a classroom subject allocation");
         classroomSubject.setClassroom(verifiedClassroom);
 
         // Guardrail Lookup: Verify if this subject is already allocated to this classroom
-        classroomSubjectRepository.findByClassroomIdAndSubjectId(classroomId, subjectId)
+        classroomSubjectRepository.findByClassroomIdAndSubjectIdAndIsActiveTrue(classroomId, subjectId)
                 .ifPresent(existingAllocation -> {
                     // Stop execution if an assignment exists, unless it's an update to the same record
                     if (!existingAllocation.getId().equals(classroomSubject.getId())) {
@@ -49,25 +55,33 @@ public class ClassroomSubjectServiceImpl implements ClassroomSubjectService {
                     }
                 });
 
+        classroomSubject.setIsActive(true);
         return classroomSubjectRepository.save(classroomSubject);
     }
 
     @Override
     public List<ClassroomSubject> getAllClassroomSubjects() {
-        return classroomSubjectRepository.findAll();
+        return classroomSubjectRepository.findAll().stream()
+                .filter(allocation -> Boolean.TRUE.equals(allocation.getIsActive()))
+                .toList();
     }
 
     @Override
     public List<ClassroomSubject> getClassroomSubjectsByClassroom(Integer classroomId) {
-        return classroomSubjectRepository.findByClassroomId(classroomId);
+        return classroomSubjectRepository.findByClassroomId(classroomId).stream()
+                .filter(allocation -> Boolean.TRUE.equals(allocation.getIsActive()))
+                .toList();
     }
 
     @Override
     @Transactional
     public void removeClassroomSubject(Integer id) {
-        if (!classroomSubjectRepository.existsById(id)) {
-            throw new RuntimeException("Data Deletion Error: Workload allocation ID " + id + " does not exist.");
-        }
-        classroomSubjectRepository.deleteById(id);
+        ClassroomSubject allocation = classroomSubjectRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Data Deletion Error: Workload allocation ID " + id + " does not exist."));
+        lifecycleGuard.requireStructureEditable(
+                allocation.getClassroom().getAcademicYear(), "Removing a classroom subject allocation");
+        if (Boolean.FALSE.equals(allocation.getIsActive())) return;
+        allocation.setIsActive(false);
+        classroomSubjectRepository.save(allocation);
     }
 }

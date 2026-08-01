@@ -23,6 +23,13 @@ public class Attendance extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPresent; // true = Present, false = Absent
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private AttendanceStatus status = AttendanceStatus.PRESENT;
+
+    @Column(length = 500)
+    private String note;
+
     @ManyToOne
     @JoinColumn(name = "enrollment_id", nullable = false)
     private Enrollment enrollment; // The unified bridge to both student and classroom context

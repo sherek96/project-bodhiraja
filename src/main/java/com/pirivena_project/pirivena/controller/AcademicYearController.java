@@ -2,6 +2,9 @@ package com.pirivena_project.pirivena.controller;
 
 import com.pirivena_project.pirivena.modal.AcademicYear;
 import com.pirivena_project.pirivena.service.AcademicYearService;
+import com.pirivena_project.pirivena.dto.AcademicYearRolloverRequest;
+import com.pirivena_project.pirivena.dto.AcademicYearRolloverResult;
+import com.pirivena_project.pirivena.dto.AcademicYearSummaryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +38,42 @@ public class AcademicYearController {
     public ResponseEntity<AcademicYear> getActiveAcademicYear() {
         AcademicYear activeYear = academicYearService.getActiveAcademicYear();
         return ResponseEntity.ok(activeYear);
+    }
+
+    @GetMapping("/summaries")
+    public ResponseEntity<List<AcademicYearSummaryDTO>> getSummaries() {
+        return ResponseEntity.ok(academicYearService.getAcademicYearSummaries());
+    }
+
+    @GetMapping("/{id}/summary")
+    public ResponseEntity<AcademicYearSummaryDTO> getSummary(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicYearService.getAcademicYearSummary(id));
+    }
+
+    @PostMapping("/{id}/activate")
+    public ResponseEntity<AcademicYear> activate(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicYearService.activateAcademicYear(id));
+    }
+
+    @PostMapping("/{id}/close")
+    public ResponseEntity<AcademicYear> close(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "false") boolean force) {
+        return ResponseEntity.ok(academicYearService.closeAcademicYear(id, force));
+    }
+
+    @PostMapping("/{id}/archive")
+    public ResponseEntity<AcademicYear> archive(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicYearService.archiveAcademicYear(id));
+    }
+
+    @PostMapping("/{id}/copy-structure")
+    public ResponseEntity<AcademicYearRolloverResult> copyStructure(
+            @PathVariable Integer id,
+            @RequestBody AcademicYearRolloverRequest request) {
+        if (request == null || request.targetAcademicYearId() == null) {
+            throw new IllegalArgumentException("A target academic year is required.");
+        }
+        return ResponseEntity.ok(academicYearService.copyStructure(id, request.targetAcademicYearId()));
     }
 }

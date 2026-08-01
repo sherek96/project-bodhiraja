@@ -25,8 +25,12 @@ public class AttendanceController {
     // 1. Save or bulk-update an entire daily classroom attendance registry sheet
     @PostMapping
     @PreAuthorize("@assignmentSecurity.attendanceSheet(#attendanceList, authentication)")
-    public ResponseEntity<List<Attendance>> saveAttendanceSheet(@RequestBody List<Attendance> attendanceList) {
-        List<Attendance> savedSheet = attendanceService.saveAttendanceSheet(attendanceList);
+    public ResponseEntity<List<Attendance>> saveAttendanceSheet(
+            @RequestParam Integer classroomId,
+            @RequestParam(defaultValue = "false") boolean confirmHistoricalEdit,
+            @RequestBody List<Attendance> attendanceList) {
+        List<Attendance> savedSheet = attendanceService.saveAttendanceSheet(
+                classroomId, attendanceList, confirmHistoricalEdit);
         return new ResponseEntity<>(savedSheet, HttpStatus.CREATED);
     }
 

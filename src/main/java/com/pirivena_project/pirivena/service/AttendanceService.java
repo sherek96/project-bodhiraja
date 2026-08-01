@@ -5,7 +5,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AttendanceService {
-    List<Attendance> saveAttendanceSheet(List<Attendance> attendanceList);
+    List<Attendance> saveAttendanceSheet(
+            Integer classroomId,
+            List<Attendance> attendanceList,
+            boolean confirmHistoricalEdit);
     List<Attendance> getAttendanceSheetByClassroomAndDate(Integer classroomId, LocalDate date);
     List<Attendance> getStudentAttendance(Integer studentId);
 }

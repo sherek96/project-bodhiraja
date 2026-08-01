@@ -44,6 +44,6 @@ public class ClassroomSubjectController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeClassroomSubject(@PathVariable Integer id) {
         classroomSubjectService.removeClassroomSubject(id);
-        return ResponseEntity.ok("Success: Subject assignment has been cleanly stripped from the classroom matrix.");
+        return ResponseEntity.ok("Success: Subject assignment has been deactivated and retained historically.");
     }
 }

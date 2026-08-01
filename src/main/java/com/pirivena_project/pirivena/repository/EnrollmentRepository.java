@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer> {
 
@@ -30,4 +31,10 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     boolean existsByStudentIdAndClassroomId(Integer studentId, Integer classroomId);
 
     boolean existsByStudentIdAndClassroomIdAndIsActiveTrue(Integer studentId, Integer classroomId);
+
+    List<Enrollment> findByClassroomAcademicYearIdAndIsActiveTrue(Integer academicYearId);
+
+    boolean existsByStudentIdAndIsActiveTrueAndClassroomAcademicYearStartDateAfter(Integer studentId, LocalDate startDate);
+
+    long countByClassroomAcademicYearIdAndIsActiveTrue(Integer academicYearId);
 }

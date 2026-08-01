@@ -20,4 +20,8 @@ public class Subject extends BaseEntity {
 
     @Column(unique = true, nullable = false)
     private String code; // e.g., "PALI101"
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private SubjectStatus status = SubjectStatus.ACTIVE;
 }

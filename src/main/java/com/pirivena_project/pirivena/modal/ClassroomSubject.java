@@ -26,4 +26,7 @@ public class ClassroomSubject extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Employee teacher;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 }

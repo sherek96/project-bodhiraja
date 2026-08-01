@@ -30,4 +30,5 @@ public interface ExamMarkRepository extends JpaRepository<ExamMark, Integer> {
     List<ExamMark> findByEnrollmentClassroomIdAndTermNumber(Integer classroomId, Integer termNumber);
 
     List<ExamMark> findByEnrollmentStudentIdOrderByTermNumberDesc(Integer studentId);
+    List<ExamMark> findByEnrollmentId(Integer enrollmentId);
 }
