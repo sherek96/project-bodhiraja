@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Attendance;
+// Purpose: Exposes HTTP endpoints for attendance operations.
+
+import com.pirivena_project.pirivena.model.Attendance;
 import com.pirivena_project.pirivena.service.AttendanceService;
 import com.pirivena_project.pirivena.service.AttendanceDashboardService;
 import com.pirivena_project.pirivena.dto.AttendanceDashboardResponse;

@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Enrollment;
+// Purpose: Exposes HTTP endpoints for enrollment operations.
+
+import com.pirivena_project.pirivena.model.Enrollment;
 import com.pirivena_project.pirivena.service.EnrollmentService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import org.springframework.security.core.Authentication;

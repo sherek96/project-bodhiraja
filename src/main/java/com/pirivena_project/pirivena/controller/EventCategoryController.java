@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.EventCategory;
+// Purpose: Exposes HTTP endpoints for event category operations.
+
+import com.pirivena_project.pirivena.model.EventCategory;
 import com.pirivena_project.pirivena.repository.EventCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

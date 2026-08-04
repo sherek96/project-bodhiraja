@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Classroom;
+// Purpose: Exposes HTTP endpoints for classroom operations.
+
+import com.pirivena_project.pirivena.model.Classroom;
 import com.pirivena_project.pirivena.service.ClassroomService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import com.pirivena_project.pirivena.service.ClassroomRosterService;

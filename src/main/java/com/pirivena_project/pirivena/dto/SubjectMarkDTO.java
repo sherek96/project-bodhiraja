@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.dto;
 
+// Purpose: Carries the subject mark data needed by one API workflow.
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

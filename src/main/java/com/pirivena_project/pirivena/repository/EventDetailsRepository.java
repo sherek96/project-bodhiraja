@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.EventDetails;
+// Purpose: Reads and writes event details records in the database.
+
+import com.pirivena_project.pirivena.model.EventDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

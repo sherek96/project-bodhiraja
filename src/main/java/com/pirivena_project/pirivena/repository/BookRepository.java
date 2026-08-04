@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.repository;
-import com.pirivena_project.pirivena.modal.Book;
+
+// Purpose: Reads and writes book records in the database.
+import com.pirivena_project.pirivena.model.Book;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import jakarta.persistence.LockModeType;

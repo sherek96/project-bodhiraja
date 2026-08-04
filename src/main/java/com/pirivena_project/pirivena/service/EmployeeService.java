@@ -1,8 +1,10 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Contains the business rules for employee operations.
+
 import com.pirivena_project.pirivena.enums.EmployeeStatus;
-import com.pirivena_project.pirivena.modal.Designation;
-import com.pirivena_project.pirivena.modal.Employee;
+import com.pirivena_project.pirivena.model.Designation;
+import com.pirivena_project.pirivena.model.Employee;
 import com.pirivena_project.pirivena.repository.DesignationRepository;
 import com.pirivena_project.pirivena.repository.EmployeeRepository;
 import com.pirivena_project.pirivena.repository.UserRepository;

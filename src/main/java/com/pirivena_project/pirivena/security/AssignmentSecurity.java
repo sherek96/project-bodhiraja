@@ -1,16 +1,18 @@
 package com.pirivena_project.pirivena.security;
 
-import com.pirivena_project.pirivena.modal.Attendance;
-import com.pirivena_project.pirivena.modal.Classroom;
-import com.pirivena_project.pirivena.modal.ExamMark;
-import com.pirivena_project.pirivena.modal.User;
-import com.pirivena_project.pirivena.modal.Student;
-import com.pirivena_project.pirivena.modal.Guardian;
-import com.pirivena_project.pirivena.modal.Enrollment;
+// Purpose: Checks whether the logged-in user may view or change a specific academic or library record.
+
+import com.pirivena_project.pirivena.model.Attendance;
+import com.pirivena_project.pirivena.model.Classroom;
+import com.pirivena_project.pirivena.model.ExamMark;
+import com.pirivena_project.pirivena.model.User;
+import com.pirivena_project.pirivena.model.Student;
+import com.pirivena_project.pirivena.model.Guardian;
+import com.pirivena_project.pirivena.model.Enrollment;
 import com.pirivena_project.pirivena.enums.EnrollmentStatus;
-import com.pirivena_project.pirivena.modal.Subject;
-import com.pirivena_project.pirivena.modal.LibraryMember;
-import com.pirivena_project.pirivena.modal.BookLending;
+import com.pirivena_project.pirivena.model.Subject;
+import com.pirivena_project.pirivena.model.LibraryMember;
+import com.pirivena_project.pirivena.model.BookLending;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
 import com.pirivena_project.pirivena.repository.ClassroomSubjectRepository;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
@@ -242,8 +244,8 @@ public class AssignmentSecurity {
                 .anyMatch(allocation -> allocation.getSubject().getId().equals(requestedId));
     }
 
-    public List<com.pirivena_project.pirivena.modal.ClassroomSubject> visibleClassroomSubjects(
-            List<com.pirivena_project.pirivena.modal.ClassroomSubject> allocations, Authentication authentication) {
+    public List<com.pirivena_project.pirivena.model.ClassroomSubject> visibleClassroomSubjects(
+            List<com.pirivena_project.pirivena.model.ClassroomSubject> allocations, Authentication authentication) {
         if (privileged(authentication)) return allocations;
         Integer ownStudentId = studentId(authentication);
         if (ownStudentId != null) {

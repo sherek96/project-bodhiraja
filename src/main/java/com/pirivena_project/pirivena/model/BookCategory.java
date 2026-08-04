@@ -1,0 +1,22 @@
+package com.pirivena_project.pirivena.model;
+
+// Purpose: Represents book category data stored in the database.
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "book_category")
+public class BookCategory {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+}

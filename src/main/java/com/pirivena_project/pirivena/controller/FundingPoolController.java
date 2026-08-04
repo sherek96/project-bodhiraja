@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.FundingPool;
+// Purpose: Exposes HTTP endpoints for funding pool operations.
+
+import com.pirivena_project.pirivena.model.FundingPool;
 import com.pirivena_project.pirivena.repository.FundingPoolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

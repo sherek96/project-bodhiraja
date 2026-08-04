@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Normalizes and validates names used by reference-data categories.
+
 import org.springframework.stereotype.Component;
 
 @Component

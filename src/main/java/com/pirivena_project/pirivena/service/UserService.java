@@ -1,11 +1,13 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Contains the business rules for user operations.
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.pirivena_project.pirivena.modal.Employee;
-import com.pirivena_project.pirivena.modal.Student;
+import com.pirivena_project.pirivena.model.Employee;
+import com.pirivena_project.pirivena.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
-import com.pirivena_project.pirivena.modal.User;
-import com.pirivena_project.pirivena.modal.Role;
+import com.pirivena_project.pirivena.model.User;
+import com.pirivena_project.pirivena.model.Role;
 import com.pirivena_project.pirivena.repository.RoleRepository;
 import com.pirivena_project.pirivena.repository.UserRepository;
 import com.pirivena_project.pirivena.repository.EmployeeRepository;
@@ -24,6 +26,10 @@ import com.pirivena_project.pirivena.repository.StudentRepository;
 import com.pirivena_project.pirivena.enums.EmployeeStatus;
 import com.pirivena_project.pirivena.enums.StudentStatus;
 
+/**
+ * Creates user accounts, assigns roles and keeps account access consistent with
+ * linked employee or student profiles.
+ */
 @Service
 public class UserService {
 
@@ -146,12 +152,12 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        // 1. UNIQUE USERNAME CHECK
+        // A username can belong to only one account.
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
 
-        // 2. ONE-TO-ONE RELATIONSHIP SAFEGUARDS
+        // An employee or student profile can be linked to only one user account.
         if (user.getEmployee() != null && user.getEmployee().getId() != null) {
             Employee employee = employeeRepository.findById(user.getEmployee().getId())
                     .orElseThrow(() -> new RuntimeException("Employee profile not found"));
@@ -175,16 +181,14 @@ public class UserService {
             }
         }
 
-        // 3. RESOLVE AND MAP ROLES
+        // Replace incoming role IDs with roles managed by the database.
         Set<Role> managedRoles = new HashSet<>();
-        String assignedRoleName = "";
 
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             for (Role role : user.getRoles()) {
                 Role existingRole = roleRepository.findById(role.getId()).orElse(null);
                 if (existingRole != null) {
                     managedRoles.add(existingRole);
-                    assignedRoleName = existingRole.getName(); // Extracts text for validation
                 }
             }
         }
@@ -195,7 +199,7 @@ public class UserService {
         }
         user.setRoles(managedRoles);
 
-        // 4. IDENTITY ALIGNMENT VALIDATION MATRIX
+        // Student accounts need a student profile; staff accounts need an employee profile.
         if (hasRole(managedRoles, "ROLE_STUDENT")) {
             if (user.getStudent() == null || user.getStudent().getId() == null) {
                 throw new RuntimeException("A student role must be uniquely linked to a Student profile");
@@ -204,7 +208,7 @@ public class UserService {
                 throw new RuntimeException("A student user account cannot be linked to an Employee profile");
             }
         } else {
-            // All other institutional roles (Admin, Principal, VP, Teacher, Librarian) are staff
+            // All roles other than student are staff roles.
             if (user.getEmployee() == null || user.getEmployee().getId() == null) {
                 throw new RuntimeException("Academic and administrative roles must be linked to an Employee profile");
             }
@@ -213,7 +217,7 @@ public class UserService {
             }
         }
 
-        // 5. SINGLE ACTIVE SEAT LOCKOUTS (Principal & Vice Principal)
+        // Only one active Principal and one active Vice Principal are allowed.
         if (hasRole(managedRoles, "ROLE_PRINCIPAL")) {
             if (userRepository.existsByRolesNameAndIsActiveTrue("ROLE_PRINCIPAL")) {
                 throw new RuntimeException("An active account with the Principal role already exists");
@@ -224,7 +228,7 @@ public class UserService {
             }
         }
 
-        // 6. ASSIGN BASELINE SYSTEM DEFAULTS
+        // New accounts start active and passwords are stored as BCrypt hashes.
         user.setIsActive(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -232,19 +236,19 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        // 1. FETCH PERSISTED DB SNAPSHOT
+        // Update the existing database record instead of saving the request object directly.
         User existingUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (Boolean.TRUE.equals(user.getIsActive())) {
             ensureLinkedProfileActive(existingUser);
         }
 
-        // 2. UNIQUE USERNAME CHECK (EXCLUDING SELF)
+        // The username must not be used by another account.
         if (userRepository.existsByUsernameAndIdNot(user.getUsername(), user.getId())) {
             throw new RuntimeException("Username already exists");
         }
 
-        // 3. ONE-TO-ONE RELATIONSHIP SAFEGUARDS (EXCLUDING SELF)
+        // The selected profile must not be linked to another account.
         if (user.getEmployee() != null && user.getEmployee().getId() != null) {
             if (userRepository.existsByEmployeeIdAndIdNot(user.getEmployee().getId(), user.getId())) {
                 throw new RuntimeException("This Employee is already linked to another user account");
@@ -256,16 +260,14 @@ public class UserService {
             }
         }
 
-        // 4. RESOLVE AND MAP ROLES
+        // Load the selected roles from the database.
         Set<Role> managedRoles = new HashSet<>();
-        String assignedRoleName = "";
 
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             for (Role role : user.getRoles()) {
                 Role existingRole = roleRepository.findById(role.getId()).orElse(null);
                 if (existingRole != null) {
                     managedRoles.add(existingRole);
-                    assignedRoleName = existingRole.getName();
                 }
             }
         }
@@ -275,7 +277,7 @@ public class UserService {
             managedRoles.add(teacherRole);
         }
 
-        // 5. IDENTITY ALIGNMENT VALIDATION MATRIX FOR UPDATES
+        // Keep the account type and linked profile type consistent.
         if (hasRole(managedRoles, "ROLE_STUDENT")) {
             if (user.getStudent() == null || user.getStudent().getId() == null) {
                 throw new RuntimeException("A student role must be uniquely linked to a Student profile");
@@ -292,7 +294,7 @@ public class UserService {
             }
         }
 
-        // 6. SINGLE ACTIVE SEAT LOCKOUTS (EXCLUDING SELF)
+        // Do not create a second active Principal or Vice Principal.
         if (Boolean.TRUE.equals(user.getIsActive())) {
             if (hasRole(managedRoles, "ROLE_PRINCIPAL")) {
                 if (userRepository.existsByRolesNameAndIsActiveTrueAndIdNot("ROLE_PRINCIPAL", user.getId())) {
@@ -305,16 +307,16 @@ public class UserService {
             }
         }
 
-        // 7. MUTATE AND APPLY VALUES SAFELY (FIXED ENCRYPTION SHIELD)
+        // Copy allowed changes onto the managed database record.
         existingUser.setUsername(user.getUsername());
         existingUser.setIsActive(user.getIsActive());
         existingUser.setRoles(managedRoles);
         existingUser.setEmployee(user.getEmployee());
         existingUser.setStudent(user.getStudent());
 
-        // Check if a password was provided in the update payload
+        // Leave the password unchanged when the form sends no new password.
         if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
-            // If the password string does NOT start with the BCrypt cryptographic prefix, it's raw text!
+            // Hash a new plain-text password before saving it.
             if (!user.getPassword().startsWith("$2a$")) {
                 existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
@@ -351,20 +353,18 @@ public class UserService {
     }
 
     public User deleteUser(Integer id) {
-        // 1. FETCH THE EXISTENT PROFILE SNAPSHOT
+        // This endpoint toggles account access instead of deleting login history.
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 2. DYNAMIC IF-ELSE TOGGLE MATRIX
         if (Boolean.TRUE.equals(existingUser.getIsActive())) {
-            // FORK A: Account is Active -> Deactivate it (Always Safe)
+            // Disable an active account.
             existingUser.setIsActive(false);
         } else {
-            // FORK B: Account is Inactive -> Attempting to Unlock (Requires Security Guard)
+            // Before restoring access, the linked profile must also be active.
             ensureLinkedProfileActive(existingUser);
 
-            // Extract the role name associated with this account container
-            // ENFORCE SINGLE-ACTIVE-SEAT LOCKOUTS DURING RE-ACTIVATION (EXCLUDING SELF)
+            // Recheck the single Principal and Vice Principal rule.
             if (hasRole(existingUser.getRoles(), "ROLE_PRINCIPAL")) {
                 if (userRepository.existsByRolesNameAndIsActiveTrueAndIdNot("ROLE_PRINCIPAL", id)) {
                     throw new RuntimeException("Cannot unlock account: An active profile with the Principal role already exists.");
@@ -375,11 +375,11 @@ public class UserService {
                 }
             }
 
-            // If the screening clears, it is safe to grant system access back
+            // All checks passed, so login access can be restored.
             existingUser.setIsActive(true);
         }
 
-        // 3. PERSIST MUTATED STATE CONTEXT BACK TO DB
+        // Save the new active/inactive state.
         return userRepository.save(existingUser);
     }
 

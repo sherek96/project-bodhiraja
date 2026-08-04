@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.TransactionExpense;
+// Purpose: Exposes HTTP endpoints for transaction expense operations.
+
+import com.pirivena_project.pirivena.model.TransactionExpense;
 import com.pirivena_project.pirivena.service.TransactionExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

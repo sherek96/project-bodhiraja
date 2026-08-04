@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Contains the business rules for guardian operations.
+
 import com.pirivena_project.pirivena.enums.GuardianStatus;
-import com.pirivena_project.pirivena.modal.Guardian;
+import com.pirivena_project.pirivena.model.Guardian;
 import com.pirivena_project.pirivena.repository.GuardianRepository;
 import com.pirivena_project.pirivena.repository.StudentRepository;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
@@ -20,7 +22,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import com.pirivena_project.pirivena.enums.Gender;
 import com.pirivena_project.pirivena.dto.GuardianResponseDTO;
-import com.pirivena_project.pirivena.modal.GuardianAccessAudit;
+import com.pirivena_project.pirivena.model.GuardianAccessAudit;
 import com.pirivena_project.pirivena.repository.GuardianAccessAuditRepository;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -260,7 +262,7 @@ public class GuardianService {
         String digits = phone.replaceAll("\\D", "");
         return digits.startsWith("94") && digits.length() == 11 ? "0" + digits.substring(2) : digits;
     }
-    private List<com.pirivena_project.pirivena.modal.Student> students(Guardian guardian) { return studentRepository.findByGuardianIdOrderByFullNameAsc(guardian.getId()); }
+    private List<com.pirivena_project.pirivena.model.Student> students(Guardian guardian) { return studentRepository.findByGuardianIdOrderByFullNameAsc(guardian.getId()); }
     private static String nullSafe(String value) { return value == null ? "" : value; }
     private static boolean isBlank(String value) { return value == null || value.isBlank(); }
     private static String mask(String value) { return isBlank(value) ? null : "•".repeat(Math.max(0, value.length() - 4)) + value.substring(Math.max(0, value.length() - 4)); }

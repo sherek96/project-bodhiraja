@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.controller;
 
+// Purpose: Exposes HTTP endpoints for enum operations.
+
 import com.pirivena_project.pirivena.enums.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

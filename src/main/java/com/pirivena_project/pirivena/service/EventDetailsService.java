@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.service;
 
-import com.pirivena_project.pirivena.modal.EventDetails;
+// Purpose: Contains the business rules for event details operations.
+
+import com.pirivena_project.pirivena.model.EventDetails;
 import com.pirivena_project.pirivena.repository.EventDetailsRepository;
 import com.pirivena_project.pirivena.repository.EventCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;

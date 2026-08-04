@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.config.JwtUtil;
-import com.pirivena_project.pirivena.config.CustomUserDetailsService;
+// Purpose: Exposes HTTP endpoints for auth operations.
+
+import com.pirivena_project.pirivena.security.JwtUtil;
+import com.pirivena_project.pirivena.security.CustomUserDetailsService;
 import com.pirivena_project.pirivena.dto.LoginRequest;
 import com.pirivena_project.pirivena.dto.AuthResponse;
 import com.pirivena_project.pirivena.repository.UserRepository;

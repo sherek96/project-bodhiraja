@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.AcademicYear;
+// Purpose: Reads and writes academic year records in the database.
+
+import com.pirivena_project.pirivena.model.AcademicYear;
 import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;

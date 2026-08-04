@@ -1,18 +1,20 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Creates a student profile and its initial enrollment as one transaction.
+
 import com.pirivena_project.pirivena.dto.StudentAdmissionContext;
 import com.pirivena_project.pirivena.dto.StudentAdmissionRequest;
 import com.pirivena_project.pirivena.dto.StudentAdmissionResponse;
 import com.pirivena_project.pirivena.enums.GuardianStatus;
-import com.pirivena_project.pirivena.modal.AcademicYear;
+import com.pirivena_project.pirivena.model.AcademicYear;
 import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import com.pirivena_project.pirivena.enums.EnrollmentStatus;
-import com.pirivena_project.pirivena.modal.Classroom;
+import com.pirivena_project.pirivena.model.Classroom;
 import com.pirivena_project.pirivena.enums.ClassroomStatus;
-import com.pirivena_project.pirivena.modal.Enrollment;
-import com.pirivena_project.pirivena.modal.Role;
-import com.pirivena_project.pirivena.modal.Student;
-import com.pirivena_project.pirivena.modal.User;
+import com.pirivena_project.pirivena.model.Enrollment;
+import com.pirivena_project.pirivena.model.Role;
+import com.pirivena_project.pirivena.model.Student;
+import com.pirivena_project.pirivena.model.User;
 import com.pirivena_project.pirivena.repository.AcademicYearRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
@@ -39,6 +41,7 @@ public class StudentAdmissionService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
+    // Give the form the current year, available classrooms and selectable guardians.
     public StudentAdmissionContext getContext() {
         AcademicYear year = requireCurrentYear();
         var classrooms = classroomRepository.findByAcademicYearId(year.getId()).stream()
@@ -55,6 +58,7 @@ public class StudentAdmissionService {
     }
 
     @Transactional
+    // Create the student, enrollment and optional login account as one transaction.
     public StudentAdmissionResponse admit(StudentAdmissionRequest request) {
         if (request == null || request.getStudent() == null || request.getClassroomId() == null) {
             throw new IllegalArgumentException("Student details and a classroom are required for admission.");
@@ -110,6 +114,7 @@ public class StudentAdmissionService {
         return new StudentAdmissionResponse(student, savedEnrollment, username);
     }
 
+    // Registration requires one academic year to be marked CURRENT.
     private AcademicYear requireCurrentYear() {
         AcademicYear year = academicYearRepository.findByStatus(AcademicYearStatus.CURRENT)
                 .orElseThrow(() -> new IllegalStateException(

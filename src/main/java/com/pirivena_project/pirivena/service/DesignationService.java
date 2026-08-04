@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.service;
 
-import com.pirivena_project.pirivena.modal.Designation;
+// Purpose: Contains the business rules for designation operations.
+
+import com.pirivena_project.pirivena.model.Designation;
 import com.pirivena_project.pirivena.repository.DesignationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

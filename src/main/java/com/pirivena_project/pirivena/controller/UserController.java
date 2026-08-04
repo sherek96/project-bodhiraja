@@ -1,9 +1,11 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Employee;
-import com.pirivena_project.pirivena.modal.Role;
-import com.pirivena_project.pirivena.modal.Student;
-import com.pirivena_project.pirivena.modal.User;
+// Purpose: Exposes HTTP endpoints for user operations.
+
+import com.pirivena_project.pirivena.model.Employee;
+import com.pirivena_project.pirivena.model.Role;
+import com.pirivena_project.pirivena.model.Student;
+import com.pirivena_project.pirivena.model.User;
 import com.pirivena_project.pirivena.repository.UserRepository; // NEW: Adjust if your repository package path differs
 import com.pirivena_project.pirivena.service.UserService;
 

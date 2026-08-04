@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.IncomeCategory;
+// Purpose: Exposes HTTP endpoints for income category operations.
+
+import com.pirivena_project.pirivena.model.IncomeCategory;
 import com.pirivena_project.pirivena.repository.IncomeCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

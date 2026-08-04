@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Builds the classroom roster with student, attendance, subject and result details.
+
 import com.pirivena_project.pirivena.dto.ClassroomRosterResponse;
-import com.pirivena_project.pirivena.modal.ExamMark;
+import com.pirivena_project.pirivena.model.ExamMark;
 import com.pirivena_project.pirivena.repository.AttendanceRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
 import com.pirivena_project.pirivena.repository.ClassroomSubjectRepository;
@@ -26,6 +28,7 @@ public class ClassroomRosterService {
     private final ClassroomSubjectRepository classroomSubjectRepository;
 
     @Transactional(readOnly = true)
+    // Combine classroom capacity, active enrollments, attendance and recent results.
     public ClassroomRosterResponse getRoster(Integer classroomId) {
         var classroom = classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new IllegalArgumentException("Classroom not found"));

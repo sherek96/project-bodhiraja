@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Book;
+// Purpose: Exposes HTTP endpoints for book operations.
+
+import com.pirivena_project.pirivena.model.Book;
 import com.pirivena_project.pirivena.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,5 +1,9 @@
 package com.pirivena_project.pirivena.config;
 
+// Purpose: Defines login rules, endpoint permissions and password encryption.
+
+import com.pirivena_project.pirivena.security.CustomUserDetailsService;
+import com.pirivena_project.pirivena.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

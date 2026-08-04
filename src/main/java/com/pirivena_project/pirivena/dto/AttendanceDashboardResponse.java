@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.dto;
 
+// Purpose: Carries attendance dashboard results from the backend to the frontend.
+
 import java.time.LocalDate;
 import java.util.List;
 

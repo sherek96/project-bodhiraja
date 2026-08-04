@@ -1,12 +1,14 @@
 package com.pirivena_project.pirivena.controller;
 
+// Purpose: Exposes HTTP endpoints for promotion operations.
+
 import com.pirivena_project.pirivena.dto.PromotionRequestDTO;
 import com.pirivena_project.pirivena.service.PromotionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
-import com.pirivena_project.pirivena.modal.PromotionDecision;
+import com.pirivena_project.pirivena.model.PromotionDecision;
 import com.pirivena_project.pirivena.enums.PromotionOutcome;
 import com.pirivena_project.pirivena.repository.PromotionDecisionRepository;
 import org.springframework.security.access.prepost.PreAuthorize;

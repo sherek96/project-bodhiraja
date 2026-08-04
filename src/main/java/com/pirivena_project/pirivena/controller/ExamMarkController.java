@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.ExamMark;
+// Purpose: Exposes HTTP endpoints for exam mark operations.
+
+import com.pirivena_project.pirivena.model.ExamMark;
 import com.pirivena_project.pirivena.service.ExamMarkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

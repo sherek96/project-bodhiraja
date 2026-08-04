@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.TransactionIncome;
+// Purpose: Reads and writes transaction income records in the database.
+
+import com.pirivena_project.pirivena.model.TransactionIncome;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

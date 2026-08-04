@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.controller;
 
+// Purpose: Exposes HTTP endpoints for book lending operations.
+
 import com.pirivena_project.pirivena.dto.ReturnBookRequest;
-import com.pirivena_project.pirivena.modal.BookLending;
+import com.pirivena_project.pirivena.model.BookLending;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import com.pirivena_project.pirivena.service.BookLendingService;
 import lombok.RequiredArgsConstructor;

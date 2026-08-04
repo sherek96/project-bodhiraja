@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.Guardian;
+// Purpose: Reads and writes guardian records in the database.
+
+import com.pirivena_project.pirivena.model.Guardian;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GuardianRepository extends JpaRepository<Guardian, Integer> {

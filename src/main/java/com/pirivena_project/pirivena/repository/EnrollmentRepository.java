@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.Enrollment;
+// Purpose: Reads and writes enrollment records in the database.
+
+import com.pirivena_project.pirivena.model.Enrollment;
 import com.pirivena_project.pirivena.enums.EnrollmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

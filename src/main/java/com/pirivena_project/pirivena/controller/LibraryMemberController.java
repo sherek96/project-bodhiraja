@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.LibraryMember;
+// Purpose: Exposes HTTP endpoints for library member operations.
+
+import com.pirivena_project.pirivena.model.LibraryMember;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import com.pirivena_project.pirivena.service.LibraryMemberService;
 import lombok.RequiredArgsConstructor;

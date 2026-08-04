@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.service;
 
-import com.pirivena_project.pirivena.modal.AcademicYear;
+// Purpose: Stops operations that are not allowed for the academic year's current state.
+
+import com.pirivena_project.pirivena.model.AcademicYear;
 import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import org.springframework.stereotype.Component;
 

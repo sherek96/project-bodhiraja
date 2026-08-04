@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.service;
 
-import com.pirivena_project.pirivena.modal.FundingPool;
-import com.pirivena_project.pirivena.modal.TransactionIncome;
+// Purpose: Contains the business rules for transaction income operations.
+
+import com.pirivena_project.pirivena.model.FundingPool;
+import com.pirivena_project.pirivena.model.TransactionIncome;
 import com.pirivena_project.pirivena.repository.FundingPoolRepository;
 import com.pirivena_project.pirivena.repository.TransactionIncomeRepository;
 import com.pirivena_project.pirivena.repository.IncomeCategoryRepository;

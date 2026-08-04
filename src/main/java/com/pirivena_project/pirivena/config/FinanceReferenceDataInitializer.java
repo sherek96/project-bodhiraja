@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.config;
 
-import com.pirivena_project.pirivena.modal.FundingPool;
-import com.pirivena_project.pirivena.modal.IncomeCategory;
+// Purpose: Creates the required finance pools and categories when they are missing.
+
+import com.pirivena_project.pirivena.model.FundingPool;
+import com.pirivena_project.pirivena.model.IncomeCategory;
 import com.pirivena_project.pirivena.repository.FundingPoolRepository;
 import com.pirivena_project.pirivena.repository.IncomeCategoryRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Designation;
+// Purpose: Exposes HTTP endpoints for designation operations.
+
+import com.pirivena_project.pirivena.model.Designation;
 import com.pirivena_project.pirivena.service.DesignationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

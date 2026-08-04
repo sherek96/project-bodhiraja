@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.controller;
-import com.pirivena_project.pirivena.modal.BookCategory;
+
+// Purpose: Exposes HTTP endpoints for book category operations.
+import com.pirivena_project.pirivena.model.BookCategory;
 import com.pirivena_project.pirivena.repository.BookCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;

@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.EventDetails;
+// Purpose: Exposes HTTP endpoints for event details operations.
+
+import com.pirivena_project.pirivena.model.EventDetails;
 import com.pirivena_project.pirivena.service.EventDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

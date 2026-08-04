@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.Subject;
+// Purpose: Reads and writes subject records in the database.
+
+import com.pirivena_project.pirivena.model.Subject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

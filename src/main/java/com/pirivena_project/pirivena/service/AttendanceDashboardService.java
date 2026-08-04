@@ -1,9 +1,11 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Calculates attendance totals and percentages used by the dashboard.
+
 import com.pirivena_project.pirivena.dto.AttendanceDashboardResponse;
 import com.pirivena_project.pirivena.enums.ClassroomStatus;
-import com.pirivena_project.pirivena.modal.Attendance;
-import com.pirivena_project.pirivena.modal.Classroom;
+import com.pirivena_project.pirivena.model.Attendance;
+import com.pirivena_project.pirivena.model.Classroom;
 import com.pirivena_project.pirivena.repository.AcademicYearRepository;
 import com.pirivena_project.pirivena.repository.AttendanceRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
@@ -28,6 +30,7 @@ public class AttendanceDashboardService {
     private final AssignmentSecurity assignmentSecurity;
 
     @Transactional(readOnly = true)
+    // Build attendance totals for the selected date range and the classrooms this user may view.
     public AttendanceDashboardResponse getSummary(
             LocalDate from, LocalDate to, Authentication authentication) {
         validateRange(from, to);
@@ -82,6 +85,7 @@ public class AttendanceDashboardService {
         if (from.plusDays(31).isBefore(to)) throw new IllegalArgumentException("Attendance dashboard range cannot exceed 31 days.");
     }
 
+    // Return a rounded attendance percentage and avoid division by zero.
     private int percentage(long present, long absent) {
         long total = present + absent;
         return total == 0 ? 0 : (int) Math.round(present * 100.0 / total);

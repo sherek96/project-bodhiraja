@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.TransactionIncome;
+// Purpose: Exposes HTTP endpoints for transaction income operations.
+
+import com.pirivena_project.pirivena.model.TransactionIncome;
 import com.pirivena_project.pirivena.service.TransactionIncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

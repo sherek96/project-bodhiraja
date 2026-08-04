@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.ExpenseCategory;
+// Purpose: Exposes HTTP endpoints for expense category operations.
+
+import com.pirivena_project.pirivena.model.ExpenseCategory;
 import com.pirivena_project.pirivena.repository.ExpenseCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

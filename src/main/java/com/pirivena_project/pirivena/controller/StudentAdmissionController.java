@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.controller;
 
+// Purpose: Exposes HTTP endpoints for student admission operations.
+
 import com.pirivena_project.pirivena.dto.StudentAdmissionContext;
 import com.pirivena_project.pirivena.dto.StudentAdmissionRequest;
 import com.pirivena_project.pirivena.dto.StudentAdmissionResponse;

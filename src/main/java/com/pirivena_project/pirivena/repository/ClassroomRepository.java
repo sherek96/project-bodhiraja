@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.AcademicYear;
-import com.pirivena_project.pirivena.modal.Classroom;
+// Purpose: Reads and writes classroom records in the database.
+
+import com.pirivena_project.pirivena.model.AcademicYear;
+import com.pirivena_project.pirivena.model.Classroom;
 import com.pirivena_project.pirivena.enums.ClassroomStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
