@@ -37,4 +37,5 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     boolean existsByStudentIdAndIsActiveTrueAndClassroomAcademicYearStartDateAfter(Integer studentId, LocalDate startDate);
 
     long countByClassroomAcademicYearIdAndIsActiveTrue(Integer academicYearId);
+    long countByClassroomIdAndIsActiveTrue(Integer classroomId);
 }

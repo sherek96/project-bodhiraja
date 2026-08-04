@@ -1,6 +1,7 @@
 package com.pirivena_project.pirivena;
 
 import com.pirivena_project.pirivena.modal.*;
+import com.pirivena_project.pirivena.enums.*;
 import com.pirivena_project.pirivena.repository.AttendanceRepository;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
 import com.pirivena_project.pirivena.service.AcademicYearLifecycleGuard;
@@ -86,12 +87,12 @@ class AttendanceValidationTests {
     }
 
     @Test
-    void confirmedHistoricalEditAndStatusMappingAreSaved() {
+    void confirmedHistoricalEditAndPresentStatusAreSaved() {
         LocalDate date = LocalDate.now().minusDays(1);
         Enrollment enrollment = enrollment(1, 10, true);
         Attendance record = record(1, date);
         record.setId(7);
-        record.setStatus(AttendanceStatus.LATE);
+        record.setStatus(AttendanceStatus.PRESENT);
         Attendance existing = record(1, date);
         existing.setId(7);
         existing.setEnrollment(enrollment);
@@ -106,7 +107,7 @@ class AttendanceValidationTests {
                 service.saveAttendanceSheet(10, List.of(record), true);
 
         assertTrue(result.get(0).getIsPresent());
-        record.setStatus(AttendanceStatus.LEAVE);
+        record.setStatus(AttendanceStatus.ABSENT);
         record.setId(null);
         when(attendanceRepository.findByEnrollmentIdAndAttendanceDate(1, date))
                 .thenReturn(Optional.empty());

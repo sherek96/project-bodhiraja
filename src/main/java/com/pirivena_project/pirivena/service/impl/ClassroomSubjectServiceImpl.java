@@ -48,7 +48,7 @@ public class ClassroomSubjectServiceImpl implements ClassroomSubjectService {
                 .ifPresent(existingAllocation -> {
                     // Stop execution if an assignment exists, unless it's an update to the same record
                     if (!existingAllocation.getId().equals(classroomSubject.getId())) {
-                        throw new RuntimeException("Validation Error: The subject '" +
+                        throw new IllegalArgumentException("Validation Error: The subject '" +
                                 existingAllocation.getSubject().getName() +
                                 "' is already assigned to '" +
                                 existingAllocation.getClassroom().getName() + "'.");

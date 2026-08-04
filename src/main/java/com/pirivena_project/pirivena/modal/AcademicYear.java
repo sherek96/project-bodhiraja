@@ -1,5 +1,6 @@
 package com.pirivena_project.pirivena.modal;
 
+import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

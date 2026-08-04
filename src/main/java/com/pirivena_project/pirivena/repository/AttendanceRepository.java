@@ -22,4 +22,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     List<Attendance> findByEnrollmentStudentIdOrderByAttendanceDateDesc(Integer studentId);
     List<Attendance> findByEnrollmentId(Integer enrollmentId);
+
+    @Query("SELECT a FROM Attendance a JOIN FETCH a.enrollment e JOIN FETCH e.classroom "
+            + "WHERE e.classroom.id IN :classroomIds AND a.attendanceDate BETWEEN :from AND :to")
+    List<Attendance> findDashboardRecords(
+            @Param("classroomIds") List<Integer> classroomIds,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to);
 }

@@ -49,7 +49,10 @@ public class ClassroomRosterService {
                             .reduce(BigDecimal.ZERO, BigDecimal::add)
                             .divide(BigDecimal.valueOf(marks.stream().filter(mark -> latestTerm.equals(mark.getTermNumber())).count()), 1, RoundingMode.HALF_UP);
                     var student = enrollment.getStudent();
-                    return new ClassroomRosterResponse.StudentRosterItem(enrollment.getId(), student.getId(), student.getFullName(),
+                    String displayName = student.getStudentType() == com.pirivena_project.pirivena.enums.StudentType.MONK
+                            ? student.getOrdinationName() : student.getFullName();
+                    if (displayName == null || displayName.isBlank()) displayName = "Ordination name not provided";
+                    return new ClassroomRosterResponse.StudentRosterItem(enrollment.getId(), student.getId(), displayName,
                             student.getAdmissionNo(), student.getStudentType(), student.getStatus(), enrollment.getIsActive(),
                             enrollment.getStatus(),
                             enrollment.getEnrollmentDate(), attendancePercentage, latestTerm, average, subjects);

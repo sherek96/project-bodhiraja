@@ -1,7 +1,7 @@
 package com.pirivena_project.pirivena.service.impl;
 
 import com.pirivena_project.pirivena.modal.Subject;
-import com.pirivena_project.pirivena.modal.SubjectStatus;
+import com.pirivena_project.pirivena.enums.SubjectStatus;
 import com.pirivena_project.pirivena.repository.SubjectRepository;
 import com.pirivena_project.pirivena.service.SubjectService;
 import lombok.RequiredArgsConstructor;

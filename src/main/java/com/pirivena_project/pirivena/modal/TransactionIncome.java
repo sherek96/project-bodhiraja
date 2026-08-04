@@ -37,9 +37,8 @@ public class TransactionIncome {
     @JoinColumn(name = "funding_pool_id")
     private FundingPool fundingPool; // Links inflows directly to our asset containers
 
-    @ManyToOne
-    @JoinColumn(name = "donor_id")
-    private Donor donor; // Optional link for tracked community benefactors
+    @Column(name = "donor_name", length = 150)
+    private String donorName;
 
     // --- AUDIT TRAIL ---
     @Column(name = "adddate", nullable = false, updatable = false)

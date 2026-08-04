@@ -2,9 +2,9 @@ package com.pirivena_project.pirivena.service.impl;
 
 import com.pirivena_project.pirivena.modal.AcademicYear;
 import com.pirivena_project.pirivena.modal.Attendance;
-import com.pirivena_project.pirivena.modal.AttendanceStatus;
+import com.pirivena_project.pirivena.enums.AttendanceStatus;
 import com.pirivena_project.pirivena.modal.Enrollment;
-import com.pirivena_project.pirivena.modal.EnrollmentStatus;
+import com.pirivena_project.pirivena.enums.EnrollmentStatus;
 import com.pirivena_project.pirivena.repository.AttendanceRepository;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
 import com.pirivena_project.pirivena.service.AcademicYearLifecycleGuard;
@@ -115,8 +115,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                         ? AttendanceStatus.ABSENT : AttendanceStatus.PRESENT;
             }
             record.setStatus(status);
-            record.setIsPresent(status == AttendanceStatus.PRESENT
-                    || status == AttendanceStatus.LATE);
+            record.setIsPresent(status == AttendanceStatus.PRESENT);
             record.setNote(normalizeNote(record.getNote()));
             record.setEnrollment(enrollment);
             validatedRecords.add(record);

@@ -1,7 +1,7 @@
 package com.pirivena_project.pirivena.repository;
 
 import com.pirivena_project.pirivena.modal.PromotionDecision;
-import com.pirivena_project.pirivena.modal.PromotionOutcome;
+import com.pirivena_project.pirivena.enums.PromotionOutcome;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,4 +11,5 @@ public interface PromotionDecisionRepository extends JpaRepository<PromotionDeci
     boolean existsBySourceEnrollmentIdAndOutcomeNot(Integer enrollmentId, PromotionOutcome outcome);
     List<PromotionDecision> findByStudentIdOrderByDecisionDateDescIdDesc(Integer studentId);
     List<PromotionDecision> findBySourceClassroomIdOrderByDecisionDateDescIdDesc(Integer classroomId);
+    long countByOutcome(PromotionOutcome outcome);
 }

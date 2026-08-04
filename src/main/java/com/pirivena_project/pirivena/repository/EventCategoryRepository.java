@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventCategoryRepository extends JpaRepository<EventCategory, Integer> {
+    boolean existsByNameIgnoreCase(String name);
 }

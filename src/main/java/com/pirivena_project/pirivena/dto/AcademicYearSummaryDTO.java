@@ -1,6 +1,6 @@
 package com.pirivena_project.pirivena.dto;
 
-import com.pirivena_project.pirivena.modal.AcademicYearStatus;
+import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import java.time.LocalDate;
 
 public record AcademicYearSummaryDTO(

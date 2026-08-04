@@ -52,8 +52,11 @@ public class GuardianService {
         return studentRepository.findByGuardianIdOrderByFullNameAsc(guardianId).stream().map(student -> {
             var activeEnrollment = enrollmentRepository.findByStudentId(student.getId()).stream()
                     .filter(enrollment -> Boolean.TRUE.equals(enrollment.getIsActive())).findFirst().orElse(null);
+            String displayName = student.getStudentType() == com.pirivena_project.pirivena.enums.StudentType.MONK
+                    ? student.getOrdinationName() : student.getFullName();
+            if (displayName == null || displayName.isBlank()) displayName = "Ordination name not provided";
             return new GuardianStudentSummaryDTO(
-                    student.getId(), student.getFullName(), student.getAdmissionNo(), student.getStatus(),
+                    student.getId(), displayName, student.getAdmissionNo(), student.getStatus(),
                     student.getGuardianRelationship(),
                     activeEnrollment == null ? null : activeEnrollment.getClassroom().getName(),
                     activeEnrollment == null ? null : activeEnrollment.getClassroom().getAcademicYear().getName());
