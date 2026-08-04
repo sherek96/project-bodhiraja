@@ -1,10 +1,12 @@
 package com.pirivena_project.pirivena.modal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -25,10 +27,10 @@ public class EventDetails {
     private String note;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Column(name = "budget_allocation", precision = 19, scale = 2)
     private BigDecimal budgetAllocation = BigDecimal.ZERO;
@@ -38,9 +40,11 @@ public class EventDetails {
     @JoinColumn(name = "event_category_id")
     private EventCategory eventCategory;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "event_status_id")
-    private EventStatus eventStatus;
+    // Retained only to make the former NOT NULL foreign-key column nullable in
+    // existing databases. It is not part of the event API or workflow anymore.
+    @JsonIgnore
+    @Column(name = "event_status_id")
+    private Integer legacyEventStatusId;
 
     // --- AUDIT TRAIL ---
     @Column(name = "adddate", nullable = false, updatable = false)

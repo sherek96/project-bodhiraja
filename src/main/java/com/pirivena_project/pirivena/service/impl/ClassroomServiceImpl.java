@@ -2,7 +2,7 @@ package com.pirivena_project.pirivena.service.impl;
 
 import com.pirivena_project.pirivena.modal.AcademicYear;
 import com.pirivena_project.pirivena.modal.Classroom;
-import com.pirivena_project.pirivena.modal.ClassroomStatus;
+import com.pirivena_project.pirivena.enums.ClassroomStatus;
 import com.pirivena_project.pirivena.repository.AcademicYearRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
 import com.pirivena_project.pirivena.service.ClassroomService;

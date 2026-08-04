@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import com.pirivena_project.pirivena.modal.PromotionDecision;
+import com.pirivena_project.pirivena.enums.PromotionOutcome;
+import com.pirivena_project.pirivena.repository.PromotionDecisionRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -15,6 +18,7 @@ import java.util.List;
 public class PromotionController {
 
     private final PromotionService promotionService;
+    private final PromotionDecisionRepository promotionDecisionRepository;
 
     // Execute an automated bulk cohort promotion migration
     @PostMapping("/batch")
@@ -33,5 +37,11 @@ public class PromotionController {
     @GetMapping("/classroom/{classroomId}")
     public ResponseEntity<List<PromotionDecision>> getClassroomHistory(@PathVariable Integer classroomId) {
         return ResponseEntity.ok(promotionService.getClassroomHistory(classroomId));
+    }
+
+    @GetMapping("/pending/count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PRINCIPAL', 'VICEPRINCIPAL')")
+    public ResponseEntity<Long> getPendingDecisionCount() {
+        return ResponseEntity.ok(promotionDecisionRepository.countByOutcome(PromotionOutcome.PENDING_DECISION));
     }
 }

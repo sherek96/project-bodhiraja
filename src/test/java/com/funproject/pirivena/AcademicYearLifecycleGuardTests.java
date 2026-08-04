@@ -1,7 +1,7 @@
 package com.pirivena_project.pirivena;
 
 import com.pirivena_project.pirivena.modal.AcademicYear;
-import com.pirivena_project.pirivena.modal.AcademicYearStatus;
+import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import com.pirivena_project.pirivena.service.AcademicYearLifecycleGuard;
 import org.junit.jupiter.api.Test;
 

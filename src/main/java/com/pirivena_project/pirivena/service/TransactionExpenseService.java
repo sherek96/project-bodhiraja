@@ -58,12 +58,6 @@ public class TransactionExpenseService {
             EventDetails event = eventRepository.findById(expense.getEvent().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Linked Event details not found."));
 
-            // State Machine Status Lock Execution
-            String status = event.getEventStatus().getName();
-            if ("Completed".equalsIgnoreCase(status) || "Cancelled".equalsIgnoreCase(status)) {
-                throw new IllegalStateException("Transaction Denied: Cannot post expenses to a " + status + " event.");
-            }
-
             // Budget Overrun Validation Execution
             BigDecimal totalSpentSoFar = expenseRepository.getTotalSpentByEvent(event.getId());
             BigDecimal projectedTotal = totalSpentSoFar.add(expense.getAmount());

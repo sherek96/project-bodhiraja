@@ -1,6 +1,7 @@
 package com.pirivena_project.pirivena;
 
 import com.pirivena_project.pirivena.modal.*;
+import com.pirivena_project.pirivena.enums.*;
 import com.pirivena_project.pirivena.repository.*;
 import com.pirivena_project.pirivena.service.AcademicYearLifecycleGuard;
 import com.pirivena_project.pirivena.service.impl.ClassroomServiceImpl;

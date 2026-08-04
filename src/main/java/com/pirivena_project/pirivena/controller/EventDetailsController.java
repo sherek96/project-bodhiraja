@@ -31,11 +31,4 @@ public class EventDetailsController {
     public ResponseEntity<EventDetails> getEventById(@PathVariable Integer id) {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
-
-    // Endpoint to shift state e.g., transitioning an event to 'Completed' or 'Cancelled'
-    @PutMapping("/{id}/status/{statusId}")
-    public ResponseEntity<EventDetails> changeEventStatus(@PathVariable Integer id, @PathVariable Integer statusId) {
-        EventDetails modifiedEvent = eventService.updateEventStatus(id, statusId);
-        return ResponseEntity.ok(modifiedEvent);
-    }
 }

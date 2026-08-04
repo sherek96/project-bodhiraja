@@ -2,8 +2,6 @@ package com.pirivena_project.pirivena.controller;
 
 import com.pirivena_project.pirivena.modal.AcademicYear;
 import com.pirivena_project.pirivena.service.AcademicYearService;
-import com.pirivena_project.pirivena.dto.AcademicYearRolloverRequest;
-import com.pirivena_project.pirivena.dto.AcademicYearRolloverResult;
 import com.pirivena_project.pirivena.dto.AcademicYearSummaryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -67,13 +65,4 @@ public class AcademicYearController {
         return ResponseEntity.ok(academicYearService.archiveAcademicYear(id));
     }
 
-    @PostMapping("/{id}/copy-structure")
-    public ResponseEntity<AcademicYearRolloverResult> copyStructure(
-            @PathVariable Integer id,
-            @RequestBody AcademicYearRolloverRequest request) {
-        if (request == null || request.targetAcademicYearId() == null) {
-            throw new IllegalArgumentException("A target academic year is required.");
-        }
-        return ResponseEntity.ok(academicYearService.copyStructure(id, request.targetAcademicYearId()));
-    }
 }

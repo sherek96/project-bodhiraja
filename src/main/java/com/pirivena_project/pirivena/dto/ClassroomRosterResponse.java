@@ -2,7 +2,7 @@ package com.pirivena_project.pirivena.dto;
 
 import com.pirivena_project.pirivena.enums.StudentStatus;
 import com.pirivena_project.pirivena.enums.StudentType;
-import com.pirivena_project.pirivena.modal.EnrollmentStatus;
+import com.pirivena_project.pirivena.enums.EnrollmentStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;

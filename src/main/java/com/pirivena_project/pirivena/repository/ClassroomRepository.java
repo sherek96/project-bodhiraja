@@ -2,7 +2,7 @@ package com.pirivena_project.pirivena.repository;
 
 import com.pirivena_project.pirivena.modal.AcademicYear;
 import com.pirivena_project.pirivena.modal.Classroom;
-import com.pirivena_project.pirivena.modal.ClassroomStatus;
+import com.pirivena_project.pirivena.enums.ClassroomStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;

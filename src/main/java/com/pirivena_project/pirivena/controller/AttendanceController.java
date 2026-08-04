@@ -2,6 +2,8 @@ package com.pirivena_project.pirivena.controller;
 
 import com.pirivena_project.pirivena.modal.Attendance;
 import com.pirivena_project.pirivena.service.AttendanceService;
+import com.pirivena_project.pirivena.service.AttendanceDashboardService;
+import com.pirivena_project.pirivena.dto.AttendanceDashboardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ public class AttendanceController {
 
     private final AttendanceService attendanceService;
     private final AssignmentSecurity assignmentSecurity;
+    private final AttendanceDashboardService attendanceDashboardService;
 
     // 1. Save or bulk-update an entire daily classroom attendance registry sheet
     @PostMapping
@@ -51,5 +54,13 @@ public class AttendanceController {
     @PreAuthorize("@assignmentSecurity.studentVisible(#studentId, authentication)")
     public ResponseEntity<List<Attendance>> getStudentAttendance(@PathVariable Integer studentId) {
         return ResponseEntity.ok(attendanceService.getStudentAttendance(studentId));
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<AttendanceDashboardResponse> getDashboardSummary(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            Authentication authentication) {
+        return ResponseEntity.ok(attendanceDashboardService.getSummary(from, to, authentication));
     }
 }

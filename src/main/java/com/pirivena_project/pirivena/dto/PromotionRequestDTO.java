@@ -3,7 +3,7 @@ package com.pirivena_project.pirivena.dto;
 import lombok.Data;
 import java.util.List;
 import java.time.LocalDate;
-import com.pirivena_project.pirivena.modal.PromotionOutcome;
+import com.pirivena_project.pirivena.enums.PromotionOutcome;
 
 @Data
 public class PromotionRequestDTO {

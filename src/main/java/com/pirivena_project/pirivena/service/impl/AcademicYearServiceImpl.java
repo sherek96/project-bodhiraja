@@ -1,14 +1,12 @@
 package com.pirivena_project.pirivena.service.impl;
 
-import com.pirivena_project.pirivena.dto.AcademicYearRolloverResult;
 import com.pirivena_project.pirivena.dto.AcademicYearSummaryDTO;
 import com.pirivena_project.pirivena.modal.AcademicYear;
-import com.pirivena_project.pirivena.modal.AcademicYearStatus;
+import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import com.pirivena_project.pirivena.modal.Classroom;
-import com.pirivena_project.pirivena.modal.ClassroomStatus;
-import com.pirivena_project.pirivena.modal.ClassroomSubject;
+import com.pirivena_project.pirivena.enums.ClassroomStatus;
 import com.pirivena_project.pirivena.modal.Enrollment;
-import com.pirivena_project.pirivena.modal.EnrollmentStatus;
+import com.pirivena_project.pirivena.enums.EnrollmentStatus;
 import com.pirivena_project.pirivena.repository.AcademicYearRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
 import com.pirivena_project.pirivena.repository.ClassroomSubjectRepository;
@@ -19,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -146,57 +141,6 @@ public class AcademicYearServiceImpl implements AcademicYearService {
         year.setStatus(AcademicYearStatus.ARCHIVED);
         transitionClassrooms(year.getId(), ClassroomStatus.ARCHIVED);
         return academicYearRepository.save(year);
-    }
-
-    @Override
-    @Transactional
-    public AcademicYearRolloverResult copyStructure(Integer sourceId, Integer targetId) {
-        if (sourceId.equals(targetId)) {
-            throw new IllegalArgumentException("Source and target academic years must be different.");
-        }
-        AcademicYear source = getYear(sourceId);
-        AcademicYear target = getYear(targetId);
-        if (target.getStatus() != AcademicYearStatus.PLANNED) {
-            throw new IllegalStateException("Classrooms can only be copied into a planned academic year.");
-        }
-        if (!target.getStartDate().isAfter(source.getStartDate())) {
-            throw new IllegalArgumentException("The target academic year must begin after the source year.");
-        }
-        if (classroomRepository.countByAcademicYearIdAndStatusNot(targetId, ClassroomStatus.ARCHIVED) > 0) {
-            throw new IllegalStateException("The target academic year already contains classrooms. Copying was stopped to prevent duplicates.");
-        }
-
-        List<Classroom> sourceClassrooms = classroomRepository.findByAcademicYearId(sourceId).stream()
-                .filter(classroom -> classroom.getStatus() != ClassroomStatus.ARCHIVED)
-                .toList();
-        Map<Integer, Classroom> copiedClassrooms = new HashMap<>();
-        List<Classroom> newClassrooms = new ArrayList<>();
-        for (Classroom original : sourceClassrooms) {
-            Classroom copy = new Classroom();
-            copy.setName(original.getName());
-            copy.setCapacity(original.getCapacity());
-            copy.setAcademicYear(target);
-            copy.setClassTeacher(original.getClassTeacher());
-            copy.setStatus(ClassroomStatus.PLANNED);
-            newClassrooms.add(copy);
-        }
-        List<Classroom> savedClassrooms = classroomRepository.saveAll(newClassrooms);
-        for (int index = 0; index < sourceClassrooms.size(); index++) {
-            copiedClassrooms.put(sourceClassrooms.get(index).getId(), savedClassrooms.get(index));
-        }
-
-        List<ClassroomSubject> allocations =
-                classroomSubjectRepository.findByClassroomAcademicYearIdAndIsActiveTrue(sourceId);
-        List<ClassroomSubject> copiedAllocations = allocations.stream().map(original -> {
-            ClassroomSubject copy = new ClassroomSubject();
-            copy.setClassroom(copiedClassrooms.get(original.getClassroom().getId()));
-            copy.setSubject(original.getSubject());
-            copy.setTeacher(original.getTeacher());
-            copy.setIsActive(true);
-            return copy;
-        }).toList();
-        classroomSubjectRepository.saveAll(copiedAllocations);
-        return new AcademicYearRolloverResult(savedClassrooms.size(), copiedAllocations.size());
     }
 
     private AcademicYearSummaryDTO toSummary(AcademicYear year) {

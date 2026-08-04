@@ -55,7 +55,7 @@ public class Student extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guardian_id")
-    @JsonIgnoreProperties({"nic", "dob", "gender", "phonePrimary", "whatsappNumber", "email", "address", "createdBy", "updatedBy"})
+    @JsonIgnoreProperties({"nic", "dob", "gender", "whatsappNumber", "email", "createdBy", "updatedBy"})
     private Guardian guardian;
 
     @Enumerated(EnumType.STRING)

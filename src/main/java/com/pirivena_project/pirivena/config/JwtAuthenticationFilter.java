@@ -1,5 +1,6 @@
 package com.pirivena_project.pirivena.config;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,8 +45,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 2. Strip away the "Bearer " prefix (7 characters long) to isolate the raw JWT string
         jwt = authHeader.substring(7);
 
-        // 3. Decode the payload and read the username
-        username = jwtUtil.extractUsername(jwt);
+        // 3. Decode the payload and read the username. Expired or malformed
+        // tokens are normal authentication failures, not server errors.
+        try {
+            username = jwtUtil.extractUsername(jwt);
+        } catch (JwtException | IllegalArgumentException exception) {
+            SecurityContextHolder.clearContext();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Your session has expired. Please log in again.");
+            return;
+        }
 
         // 4. Verify the username exists and that this request hasn't already been security-cleared
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

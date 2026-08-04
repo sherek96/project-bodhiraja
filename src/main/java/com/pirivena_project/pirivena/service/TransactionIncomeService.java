@@ -5,7 +5,6 @@ import com.pirivena_project.pirivena.modal.TransactionIncome;
 import com.pirivena_project.pirivena.repository.FundingPoolRepository;
 import com.pirivena_project.pirivena.repository.TransactionIncomeRepository;
 import com.pirivena_project.pirivena.repository.IncomeCategoryRepository;
-import com.pirivena_project.pirivena.repository.DonorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +24,6 @@ public class TransactionIncomeService {
 
     @Autowired
     private IncomeCategoryRepository incomeCategoryRepository;
-
-    @Autowired
-    private DonorRepository donorRepository;
 
     @Autowired
     private AuthenticatedUserService authenticatedUserService;
@@ -57,12 +53,19 @@ public class TransactionIncomeService {
         income.setFundingPool(pool);
         income.setIncomeCategory(incomeCategoryRepository.findById(income.getIncomeCategory().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Income category was not found.")));
-        if (income.getDonor() != null && income.getDonor().getId() != null) {
-            income.setDonor(donorRepository.findById(income.getDonor().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Donor was not found.")));
-        }
+        income.setDonorName(normalizeDonorName(income.getDonorName()));
         income.setAddUser(authenticatedUserService.getRequiredUserId());
         return incomeRepository.save(income);
+    }
+
+    private String normalizeDonorName(String donorName) {
+        if (donorName == null || donorName.isBlank()) return null;
+        String normalized = donorName.trim().replaceAll("\\s+", " ");
+        if (normalized.length() > 150) {
+            throw new IllegalArgumentException(
+                    "Donor name must not exceed 150 characters.");
+        }
+        return normalized;
     }
 
     public List<TransactionIncome> getAllIncomes() {

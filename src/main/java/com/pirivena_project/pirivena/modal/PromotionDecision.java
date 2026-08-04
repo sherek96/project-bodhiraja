@@ -1,5 +1,6 @@
 package com.pirivena_project.pirivena.modal;
 
+import com.pirivena_project.pirivena.enums.PromotionOutcome;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
