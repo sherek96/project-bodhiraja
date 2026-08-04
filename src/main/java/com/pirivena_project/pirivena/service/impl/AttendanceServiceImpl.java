@@ -62,8 +62,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                         "Enrollment " + enrollment.getId()
                                 + " does not belong to the selected classroom.");
             }
-            if (enrollment.getStatus() != EnrollmentStatus.ACTIVE
-                    || !Boolean.TRUE.equals(enrollment.getIsActive())) {
+            if (enrollment.getStatus() != EnrollmentStatus.ACTIVE) {
                 throw new IllegalStateException(
                         "Attendance cannot be recorded for inactive enrollment "
                                 + enrollment.getId() + ".");
@@ -110,13 +109,8 @@ public class AttendanceServiceImpl implements AttendanceService {
             }
 
             AttendanceStatus status = record.getStatus();
-            if (status == null) {
-                status = Boolean.FALSE.equals(record.getIsPresent())
-                        ? AttendanceStatus.ABSENT : AttendanceStatus.PRESENT;
-            }
+            if (status == null) status = AttendanceStatus.PRESENT;
             record.setStatus(status);
-            record.setIsPresent(status == AttendanceStatus.PRESENT);
-            record.setNote(normalizeNote(record.getNote()));
             record.setEnrollment(enrollment);
             validatedRecords.add(record);
         }
@@ -131,15 +125,6 @@ public class AttendanceServiceImpl implements AttendanceService {
         if (date.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Attendance cannot be recorded for a future date.");
         }
-    }
-
-    private String normalizeNote(String note) {
-        if (note == null || note.isBlank()) return null;
-        String normalized = note.trim();
-        if (normalized.length() > 500) {
-            throw new IllegalArgumentException("Attendance note must not exceed 500 characters.");
-        }
-        return normalized;
     }
 
     @Override

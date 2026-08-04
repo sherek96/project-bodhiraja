@@ -51,7 +51,7 @@ public class GuardianService {
         getGuardianById(guardianId);
         return studentRepository.findByGuardianIdOrderByFullNameAsc(guardianId).stream().map(student -> {
             var activeEnrollment = enrollmentRepository.findByStudentId(student.getId()).stream()
-                    .filter(enrollment -> Boolean.TRUE.equals(enrollment.getIsActive())).findFirst().orElse(null);
+                    .filter(enrollment -> enrollment.getStatus() == com.pirivena_project.pirivena.enums.EnrollmentStatus.ACTIVE).findFirst().orElse(null);
             String displayName = student.getStudentType() == com.pirivena_project.pirivena.enums.StudentType.MONK
                     ? student.getOrdinationName() : student.getFullName();
             if (displayName == null || displayName.isBlank()) displayName = "Ordination name not provided";
@@ -239,8 +239,7 @@ public class GuardianService {
         Gender inferredGender = encodedDay > 500 ? Gender.FEMALE : Gender.MALE;
         int dayOfYear = encodedDay > 500 ? encodedDay - 500 : encodedDay;
         try {
-            LocalDate inferredDob = LocalDate.ofYearDay(year, dayOfYear);
-            if (!inferredDob.equals(guardian.getDob())) throw new RuntimeException("Guardian date of birth does not match the NIC");
+            LocalDate.ofYearDay(year, dayOfYear);
             if (inferredGender != guardian.getGender()) throw new RuntimeException("Guardian gender does not match the NIC");
         } catch (DateTimeException e) {
             throw new RuntimeException("Invalid NIC birth date");

@@ -4,6 +4,7 @@ import com.pirivena_project.pirivena.dto.ReportCardResponseDTO;
 import com.pirivena_project.pirivena.dto.SubjectMarkDTO;
 import com.pirivena_project.pirivena.modal.Enrollment;
 import com.pirivena_project.pirivena.modal.ExamMark;
+import com.pirivena_project.pirivena.enums.StudentType;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
 import com.pirivena_project.pirivena.repository.ExamMarkRepository;
 import com.pirivena_project.pirivena.repository.ClassroomSubjectRepository;
@@ -92,7 +93,10 @@ public class ReportCardServiceImpl implements ReportCardService {
 
         // 6. Map all calculated metrics into the final structural DTO payload
         ReportCardResponseDTO reportCard = new ReportCardResponseDTO();
-        reportCard.setStudentName(targetEnrollment.getStudent().getFullName());
+        String studentName = targetEnrollment.getStudent().getStudentType() == StudentType.MONK
+                ? targetEnrollment.getStudent().getOrdinationName()
+                : targetEnrollment.getStudent().getFullName();
+        reportCard.setStudentName(studentName);
         reportCard.setAdmissionNumber(targetEnrollment.getStudent().getAdmissionNo());
         reportCard.setClassroomName(targetEnrollment.getClassroom().getName());
         reportCard.setTermNumber(termNumber);

@@ -1,2 +1,0 @@
--- Baseline marker for the existing MySQL schema.
--- Add every future manual schema change as a new, versioned migration file.

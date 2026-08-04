@@ -36,7 +36,6 @@ public class EventDetailsService {
         }
         event.setEventCategory(categoryRepository.findById(event.getEventCategory().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Event category was not found.")));
-        event.setLegacyEventStatusId(null);
         event.setAddUser(authenticatedUserService.getRequiredUserId());
         return eventRepository.save(event);
     }

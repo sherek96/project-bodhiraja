@@ -21,15 +21,9 @@ public class Attendance extends BaseEntity {
     @Column(name = "attendance_date", nullable = false)
     private LocalDate attendanceDate; // Renamed to align perfectly with the repository layers
 
-    @Column(nullable = false)
-    private Boolean isPresent; // true = Present, false = Absent
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private AttendanceStatus status = AttendanceStatus.PRESENT;
-
-    @Column(length = 500)
-    private String note;
 
     @ManyToOne
     @JoinColumn(name = "enrollment_id", nullable = false)

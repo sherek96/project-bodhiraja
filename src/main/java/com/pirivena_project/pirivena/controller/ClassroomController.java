@@ -36,6 +36,18 @@ public class ClassroomController {
         return ResponseEntity.ok(assignmentSecurity.visibleClassrooms(classrooms, authentication));
     }
 
+    @GetMapping("/assigned/class-teacher")
+    public ResponseEntity<List<Classroom>> getClassTeacherClassrooms(Authentication authentication) {
+        return ResponseEntity.ok(assignmentSecurity.classTeacherClassrooms(
+                classroomService.getAllClassrooms(), authentication));
+    }
+
+    @GetMapping("/assigned/subject-teacher")
+    public ResponseEntity<List<Classroom>> getSubjectTeacherClassrooms(Authentication authentication) {
+        return ResponseEntity.ok(assignmentSecurity.subjectTeacherClassrooms(
+                classroomService.getAllClassrooms(), authentication));
+    }
+
     // 3. Fetch classrooms for a specific academic year (Incredibly helpful for dashboard dropdown sorting)
     @GetMapping("/year/{academicYearId}")
     public ResponseEntity<List<Classroom>> getClassroomsByYear(@PathVariable Integer academicYearId, Authentication authentication) {

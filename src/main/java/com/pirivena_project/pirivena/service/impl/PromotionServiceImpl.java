@@ -56,8 +56,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         Classroom destination = resolveDestination(request, source);
         Map<Integer, Enrollment> sourceEnrollments = enrollmentRepository.findByClassroomId(source.getId()).stream()
-                .filter(enrollment -> Boolean.TRUE.equals(enrollment.getIsActive())
-                        && enrollment.getStatus() == EnrollmentStatus.ACTIVE)
+                .filter(enrollment -> enrollment.getStatus() == EnrollmentStatus.ACTIVE)
                 .collect(Collectors.toMap(enrollment -> enrollment.getStudent().getId(), Function.identity()));
 
         return request.getStudentIds().stream()
@@ -167,7 +166,6 @@ public class PromotionServiceImpl implements PromotionService {
         newEnrollment.setStudent(student);
         newEnrollment.setClassroom(destination);
         newEnrollment.setEnrollmentDate(decisionDate);
-        newEnrollment.setIsActive(true);
         newEnrollment.setStatus(EnrollmentStatus.ACTIVE);
         enrollmentRepository.save(newEnrollment);
     }
@@ -177,7 +175,6 @@ public class PromotionServiceImpl implements PromotionService {
             return;
         }
 
-        sourceEnrollment.setIsActive(false);
         sourceEnrollment.setStatus(outcome == PromotionOutcome.PROMOTED
                 ? EnrollmentStatus.PROMOTED
                 : EnrollmentStatus.COMPLETED);
@@ -220,7 +217,7 @@ public class PromotionServiceImpl implements PromotionService {
         if (attendance.isEmpty()) {
             return null;
         }
-        long presentDays = attendance.stream().filter(record -> Boolean.TRUE.equals(record.getIsPresent())).count();
+        long presentDays = attendance.stream().filter(record -> record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.PRESENT).count();
         return BigDecimal.valueOf(presentDays)
                 .multiply(BigDecimal.valueOf(100))
                 .divide(BigDecimal.valueOf(attendance.size()), 2, RoundingMode.HALF_UP);

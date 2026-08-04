@@ -1,2 +1,0 @@
-ALTER TABLE employee
-    ADD COLUMN dob DATE NULL AFTER nic;

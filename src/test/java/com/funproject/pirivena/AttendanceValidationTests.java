@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -106,13 +107,13 @@ class AttendanceValidationTests {
         List<Attendance> result =
                 service.saveAttendanceSheet(10, List.of(record), true);
 
-        assertTrue(result.get(0).getIsPresent());
+        assertEquals(AttendanceStatus.PRESENT, result.get(0).getStatus());
         record.setStatus(AttendanceStatus.ABSENT);
         record.setId(null);
         when(attendanceRepository.findByEnrollmentIdAndAttendanceDate(1, date))
                 .thenReturn(Optional.empty());
         result = service.saveAttendanceSheet(10, List.of(record), false);
-        assertFalse(result.get(0).getIsPresent());
+        assertEquals(AttendanceStatus.ABSENT, result.get(0).getStatus());
     }
 
     private Attendance record(Integer enrollmentId, LocalDate date) {
@@ -122,7 +123,6 @@ class AttendanceValidationTests {
         record.setEnrollment(reference);
         record.setAttendanceDate(date);
         record.setStatus(AttendanceStatus.PRESENT);
-        record.setIsPresent(true);
         return record;
     }
 
@@ -131,7 +131,6 @@ class AttendanceValidationTests {
         year.setId(1);
         year.setName("Current");
         year.setStatus(AcademicYearStatus.CURRENT);
-        year.setIsCurrent(true);
         year.setStartDate(LocalDate.now().minusDays(100));
         year.setEndDate(LocalDate.now().plusDays(100));
         Classroom classroom = new Classroom();
@@ -141,7 +140,6 @@ class AttendanceValidationTests {
         enrollment.setId(id);
         enrollment.setClassroom(classroom);
         enrollment.setStatus(active ? EnrollmentStatus.ACTIVE : EnrollmentStatus.WITHDRAWN);
-        enrollment.setIsActive(active);
         return enrollment;
     }
 }

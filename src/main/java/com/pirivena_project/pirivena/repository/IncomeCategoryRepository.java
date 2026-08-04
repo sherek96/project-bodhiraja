@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IncomeCategoryRepository extends JpaRepository<IncomeCategory, Integer> {
     boolean existsByNameIgnoreCase(String name);
+    java.util.Optional<IncomeCategory> findByNameIgnoreCase(String name);
 }

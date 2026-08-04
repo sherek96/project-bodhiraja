@@ -9,7 +9,6 @@ public record AcademicYearSummaryDTO(
         LocalDate startDate,
         LocalDate endDate,
         AcademicYearStatus status,
-        Boolean isCurrent,
         long classroomCount,
         long studentCount,
         long subjectCount,

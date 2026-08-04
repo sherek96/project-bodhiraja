@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import com.pirivena_project.pirivena.service.ReferenceDataNameValidator;
 
 @RestController
 @RequestMapping("/api/income-categories")
 @RequiredArgsConstructor
 public class IncomeCategoryController {
     private final IncomeCategoryRepository incomeCategoryRepository;
+    private final ReferenceDataNameValidator nameValidator;
 
     @GetMapping
     public ResponseEntity<List<IncomeCategory>> getAllIncomeCategories() {
@@ -27,7 +29,7 @@ public class IncomeCategoryController {
     @PostMapping
     public ResponseEntity<IncomeCategory> createIncomeCategory(
             @RequestBody IncomeCategory category) {
-        String name = normalizeName(category == null ? null : category.getName());
+        String name = nameValidator.requiredName(category == null ? null : category.getName(), "Income category", 100);
         if (incomeCategoryRepository.existsByNameIgnoreCase(name)) {
             throw new IllegalArgumentException("This income category already exists.");
         }
@@ -37,15 +39,4 @@ public class IncomeCategoryController {
                 .body(incomeCategoryRepository.save(category));
     }
 
-    private String normalizeName(String value) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Income category name is required.");
-        }
-        String name = value.trim().replaceAll("\\s+", " ");
-        if (name.length() > 100) {
-            throw new IllegalArgumentException(
-                    "Income category name must not exceed 100 characters.");
-        }
-        return name;
-    }
 }

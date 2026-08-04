@@ -49,7 +49,6 @@ class AcademicYearLifecycleGuardTests {
         year.setId(status.ordinal() + 1);
         year.setName(status.name());
         year.setStatus(status);
-        year.setIsCurrent(status == AcademicYearStatus.CURRENT);
         return year;
     }
 }

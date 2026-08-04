@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import com.pirivena_project.pirivena.service.ReferenceDataNameValidator;
 
 @RestController
 @RequestMapping("/api/expense-categories")
 @RequiredArgsConstructor
 public class ExpenseCategoryController {
     private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final ReferenceDataNameValidator nameValidator;
 
     @GetMapping
     public ResponseEntity<List<ExpenseCategory>> getAllExpenseCategories() {
@@ -27,7 +29,7 @@ public class ExpenseCategoryController {
     @PostMapping
     public ResponseEntity<ExpenseCategory> createExpenseCategory(
             @RequestBody ExpenseCategory category) {
-        String name = normalizeName(category == null ? null : category.getName());
+        String name = nameValidator.requiredName(category == null ? null : category.getName(), "Expense category", 100);
         if (expenseCategoryRepository.existsByNameIgnoreCase(name)) {
             throw new IllegalArgumentException("This expense category already exists.");
         }
@@ -37,15 +39,4 @@ public class ExpenseCategoryController {
                 .body(expenseCategoryRepository.save(category));
     }
 
-    private String normalizeName(String value) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Expense category name is required.");
-        }
-        String name = value.trim().replaceAll("\\s+", " ");
-        if (name.length() > 100) {
-            throw new IllegalArgumentException(
-                    "Expense category name must not exceed 100 characters.");
-        }
-        return name;
-    }
 }

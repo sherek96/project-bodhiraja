@@ -31,7 +31,7 @@ public class AttendanceDashboardService {
     public AttendanceDashboardResponse getSummary(
             LocalDate from, LocalDate to, Authentication authentication) {
         validateRange(from, to);
-        var currentYear = academicYearRepository.findByIsCurrentTrue();
+        var currentYear = academicYearRepository.findByStatus(com.pirivena_project.pirivena.enums.AcademicYearStatus.CURRENT);
         if (currentYear.isEmpty()) return empty(from, to);
 
         List<Classroom> classrooms = assignmentSecurity.visibleClassrooms(
@@ -50,9 +50,9 @@ public class AttendanceDashboardService {
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
             LocalDate day = date;
             long present = records.stream().filter(record -> day.equals(record.getAttendanceDate())
-                    && Boolean.TRUE.equals(record.getIsPresent())).count();
+                    && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.PRESENT).count();
             long absent = records.stream().filter(record -> day.equals(record.getAttendanceDate())
-                    && !Boolean.TRUE.equals(record.getIsPresent())).count();
+                    && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.ABSENT).count();
             weeklyPresent += present;
             weeklyAbsent += absent;
             days.add(new AttendanceDashboardResponse.DailySummary(
@@ -61,9 +61,9 @@ public class AttendanceDashboardService {
 
         LocalDate today = LocalDate.now();
         long todayPresent = records.stream().filter(record -> today.equals(record.getAttendanceDate())
-                && Boolean.TRUE.equals(record.getIsPresent())).count();
+                && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.PRESENT).count();
         long todayAbsent = records.stream().filter(record -> today.equals(record.getAttendanceDate())
-                && !Boolean.TRUE.equals(record.getIsPresent())).count();
+                && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.ABSENT).count();
         Set<Integer> submittedIds = new HashSet<>();
         classroomRecords.stream().filter(record -> today.equals(record.getAttendanceDate()))
                 .forEach(record -> submittedIds.add(record.getEnrollment().getClassroom().getId()));

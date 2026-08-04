@@ -38,7 +38,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         // Step 1: Intelligent Autofill Logic
         // If the frontend didn't supply an explicit year, automatically attach the active academic year
         if (classroom.getAcademicYear() == null || classroom.getAcademicYear().getId() == null) {
-            AcademicYear currentActiveYear = academicYearRepository.findByIsCurrentTrue()
+            AcademicYear currentActiveYear = academicYearRepository.findByStatus(com.pirivena_project.pirivena.enums.AcademicYearStatus.CURRENT)
                     .orElseThrow(() -> new RuntimeException("Validation Error: Cannot auto-assign year. No active academic year found."));
             classroom.setAcademicYear(currentActiveYear);
         } else {

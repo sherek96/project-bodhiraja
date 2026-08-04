@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -230,12 +231,14 @@ public class EmployeeService {
         }
 
         try {
-            LocalDate inferredDob = LocalDate.ofYearDay(year, encodedDay);
-            if (!inferredDob.equals(employee.getDob())) {
-                throw new RuntimeException("Date of birth does not match the NIC");
-            }
+            LocalDate.ofYearDay(year, encodedDay);
         } catch (DateTimeException e) {
             throw new RuntimeException("Invalid NIC birth date");
+        }
+
+        int employeeAge = Period.between(employee.getDob(), LocalDate.now()).getYears();
+        if (employeeAge < 18 || employeeAge > 60) {
+            throw new RuntimeException("Employee must be between 18 and 60 years old");
         }
 
         if (employee.getJoinDate() == null) {

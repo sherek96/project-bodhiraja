@@ -6,6 +6,7 @@ import com.pirivena_project.pirivena.dto.StudentAdmissionResponse;
 import com.pirivena_project.pirivena.enums.GuardianStatus;
 import com.pirivena_project.pirivena.modal.AcademicYear;
 import com.pirivena_project.pirivena.enums.AcademicYearStatus;
+import com.pirivena_project.pirivena.enums.EnrollmentStatus;
 import com.pirivena_project.pirivena.modal.Classroom;
 import com.pirivena_project.pirivena.enums.ClassroomStatus;
 import com.pirivena_project.pirivena.modal.Enrollment;
@@ -43,7 +44,7 @@ public class StudentAdmissionService {
         var classrooms = classroomRepository.findByAcademicYearId(year.getId()).stream()
                 .filter(classroom -> classroom.getStatus() == ClassroomStatus.ACTIVE)
                 .map(classroom -> {
-                    long enrolled = enrollmentRepository.countByClassroomIdAndIsActiveTrue(classroom.getId());
+                    long enrolled = enrollmentRepository.countByClassroomIdAndStatus(classroom.getId(), EnrollmentStatus.ACTIVE);
                     return new StudentAdmissionContext.ClassroomOption(
                             classroom.getId(), classroom.getName(), classroom.getCapacity(), enrolled,
                             Math.max(0, classroom.getCapacity() - enrolled));
@@ -65,7 +66,7 @@ public class StudentAdmissionService {
                 || classroom.getStatus() != ClassroomStatus.ACTIVE) {
             throw new IllegalStateException("Students can only be admitted into an active classroom in the current academic year.");
         }
-        long enrolled = enrollmentRepository.countByClassroomIdAndIsActiveTrue(classroom.getId());
+        long enrolled = enrollmentRepository.countByClassroomIdAndStatus(classroom.getId(), EnrollmentStatus.ACTIVE);
         if (enrolled >= classroom.getCapacity()) {
             throw new IllegalStateException("The selected classroom has reached its capacity of " + classroom.getCapacity() + " students.");
         }
@@ -110,7 +111,7 @@ public class StudentAdmissionService {
     }
 
     private AcademicYear requireCurrentYear() {
-        AcademicYear year = academicYearRepository.findByIsCurrentTrue()
+        AcademicYear year = academicYearRepository.findByStatus(AcademicYearStatus.CURRENT)
                 .orElseThrow(() -> new IllegalStateException(
                         "A current academic year is required before students can be registered and enrolled."));
         if (year.getStatus() != AcademicYearStatus.CURRENT) {

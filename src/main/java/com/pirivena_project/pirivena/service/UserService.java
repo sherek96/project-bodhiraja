@@ -67,6 +67,13 @@ public class UserService {
             var student = root.join("student", JoinType.LEFT);
             var predicates = new java.util.ArrayList<jakarta.persistence.criteria.Predicate>();
 
+            var adminUserIds = query.subquery(Integer.class);
+            var adminUser = adminUserIds.from(User.class);
+            var adminRole = adminUser.join("roles", JoinType.INNER);
+            adminUserIds.select(adminUser.get("id"))
+                    .where(criteria.equal(adminRole.get("name"), "ROLE_ADMIN"));
+            predicates.add(criteria.not(root.get("id").in(adminUserIds)));
+
             if (currentUsername != null && !currentUsername.isBlank()) {
                 predicates.add(criteria.notEqual(root.get("username"), currentUsername));
             }

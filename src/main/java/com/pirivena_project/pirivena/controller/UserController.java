@@ -8,8 +8,10 @@ import com.pirivena_project.pirivena.repository.UserRepository; // NEW: Adjust i
 import com.pirivena_project.pirivena.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal; // NEW: For capturing the active JWT identity context securely
@@ -27,6 +29,12 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository; // NEW: Added to allow direct self-identity lookups via username
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Value("${app.bootstrap-admin.username:admin}")
+    private String bootstrapAdminUsername;
 
     @GetMapping
     public ResponseEntity<UserPageResponse> getAllUsers(
@@ -146,6 +154,25 @@ public class UserController {
             // 2. Load the fully populated database row containing ID, Roles, and profile linkages
             User databaseSnapshot = userRepository.findByUsername(currentLoggedInUsername)
                     .orElseThrow(() -> new RuntimeException("Authenticated user session context could not be found"));
+
+            boolean isBootstrapAdministrator = currentLoggedInUsername.equals(bootstrapAdminUsername)
+                    && databaseSnapshot.getEmployee() == null
+                    && databaseSnapshot.getStudent() == null
+                    && databaseSnapshot.getRoles().stream()
+                            .anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
+
+            if (isBootstrapAdministrator) {
+                if (profileUpdateRequest.getUsername() != null
+                        && !bootstrapAdminUsername.equals(profileUpdateRequest.getUsername().trim())) {
+                    throw new RuntimeException("The recovery administrator username cannot be changed");
+                }
+                if (profileUpdateRequest.getPassword() != null
+                        && !profileUpdateRequest.getPassword().trim().isEmpty()) {
+                    databaseSnapshot.setPassword(passwordEncoder.encode(profileUpdateRequest.getPassword()));
+                    userRepository.save(databaseSnapshot);
+                }
+                return new ResponseEntity<>("Profile updated successfully", HttpStatus.OK);
+            }
 
             // 3. Bind username modifications from the payload directly to the snapshot
             databaseSnapshot.setUsername(profileUpdateRequest.getUsername());

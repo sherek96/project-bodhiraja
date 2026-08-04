@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface FundingPoolRepository extends JpaRepository<FundingPool, Integer> {
     // Used to look up a pool by name if needed during validation
     boolean existsByName(String name);
+    Optional<FundingPool> findByNameIgnoreCase(String name);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT f FROM FundingPool f WHERE f.id = :id")

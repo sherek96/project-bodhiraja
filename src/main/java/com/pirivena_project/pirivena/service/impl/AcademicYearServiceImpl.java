@@ -42,7 +42,6 @@ public class AcademicYearServiceImpl implements AcademicYearService {
 
         if (request.getId() == null) {
             request.setStatus(AcademicYearStatus.PLANNED);
-            request.setIsCurrent(false);
             return academicYearRepository.save(request);
         }
 
@@ -63,7 +62,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
 
     @Override
     public AcademicYear getActiveAcademicYear() {
-        return academicYearRepository.findByIsCurrentTrue()
+        return academicYearRepository.findByStatus(AcademicYearStatus.CURRENT)
                 .orElseThrow(() -> new IllegalStateException("No current academic year has been established."));
     }
 
@@ -91,14 +90,13 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             throw new IllegalStateException("Only a planned academic year can be made current.");
         }
 
-        academicYearRepository.findByIsCurrentTrue().ifPresent(current -> {
+        academicYearRepository.findByStatus(AcademicYearStatus.CURRENT).ifPresent(current -> {
             if (!current.getId().equals(target.getId())) {
                 long unpromoted = countUnpromoted(current);
                 if (unpromoted > 0) {
                     throw new IllegalStateException("Cannot switch the current year: " + current.getName()
                             + " has " + unpromoted + " unpromoted active student(s). Close that year after reviewing the warning first.");
                 }
-                current.setIsCurrent(false);
                 current.setStatus(AcademicYearStatus.COMPLETED);
                 academicYearRepository.save(current);
                 transitionClassrooms(current.getId(), ClassroomStatus.COMPLETED);
@@ -106,7 +104,6 @@ public class AcademicYearServiceImpl implements AcademicYearService {
         });
 
         target.setStatus(AcademicYearStatus.CURRENT);
-        target.setIsCurrent(true);
         transitionClassrooms(target.getId(), ClassroomStatus.ACTIVE);
         return academicYearRepository.save(target);
     }
@@ -123,7 +120,6 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             throw new IllegalStateException("Academic year has " + unpromoted
                     + " unpromoted active student(s). Confirm the warning to close it anyway.");
         }
-        year.setIsCurrent(false);
         year.setStatus(AcademicYearStatus.COMPLETED);
         completeRemainingEnrollments(year.getId());
         transitionClassrooms(year.getId(), ClassroomStatus.COMPLETED);
@@ -137,7 +133,6 @@ public class AcademicYearServiceImpl implements AcademicYearService {
         if (year.getStatus() != AcademicYearStatus.COMPLETED) {
             throw new IllegalStateException("Only a completed academic year can be archived.");
         }
-        year.setIsCurrent(false);
         year.setStatus(AcademicYearStatus.ARCHIVED);
         transitionClassrooms(year.getId(), ClassroomStatus.ARCHIVED);
         return academicYearRepository.save(year);
@@ -145,19 +140,19 @@ public class AcademicYearServiceImpl implements AcademicYearService {
 
     private AcademicYearSummaryDTO toSummary(AcademicYear year) {
         return new AcademicYearSummaryDTO(
-                year.getId(), year.getName(), year.getStartDate(), year.getEndDate(), normalizedStatus(year),
-                year.getIsCurrent(), classroomRepository.countByAcademicYearIdAndStatusNot(
+                year.getId(), year.getName(), year.getStartDate(), year.getEndDate(), year.getStatus(),
+                classroomRepository.countByAcademicYearIdAndStatusNot(
                         year.getId(), ClassroomStatus.ARCHIVED),
-                enrollmentRepository.countByClassroomAcademicYearIdAndIsActiveTrue(year.getId()),
+                enrollmentRepository.countByClassroomAcademicYearIdAndStatus(year.getId(), EnrollmentStatus.ACTIVE),
                 classroomSubjectRepository.countByClassroomAcademicYearIdAndIsActiveTrue(year.getId()),
                 countUnpromoted(year));
     }
 
     private long countUnpromoted(AcademicYear year) {
-        List<Enrollment> active = enrollmentRepository.findByClassroomAcademicYearIdAndIsActiveTrue(year.getId());
+        List<Enrollment> active = enrollmentRepository.findByClassroomAcademicYearIdAndStatus(year.getId(), EnrollmentStatus.ACTIVE);
         return active.stream().filter(enrollment -> !enrollmentRepository
-                .existsByStudentIdAndIsActiveTrueAndClassroomAcademicYearStartDateAfter(
-                        enrollment.getStudent().getId(), year.getStartDate())).count();
+                .existsByStudentIdAndStatusAndClassroomAcademicYearStartDateAfter(
+                        enrollment.getStudent().getId(), EnrollmentStatus.ACTIVE, year.getStartDate())).count();
     }
 
     private void transitionClassrooms(Integer academicYearId, ClassroomStatus status) {
@@ -170,17 +165,11 @@ public class AcademicYearServiceImpl implements AcademicYearService {
 
     private void completeRemainingEnrollments(Integer academicYearId) {
         List<Enrollment> active =
-                enrollmentRepository.findByClassroomAcademicYearIdAndIsActiveTrue(academicYearId);
+                enrollmentRepository.findByClassroomAcademicYearIdAndStatus(academicYearId, EnrollmentStatus.ACTIVE);
         active.forEach(enrollment -> {
             enrollment.setStatus(EnrollmentStatus.COMPLETED);
-            enrollment.setIsActive(false);
         });
         enrollmentRepository.saveAll(active);
-    }
-
-    private AcademicYearStatus normalizedStatus(AcademicYear year) {
-        if (year.getStatus() != null) return year.getStatus();
-        return Boolean.TRUE.equals(year.getIsCurrent()) ? AcademicYearStatus.CURRENT : AcademicYearStatus.COMPLETED;
     }
 
     private AcademicYear getYear(Integer id) {

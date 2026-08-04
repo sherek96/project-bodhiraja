@@ -60,12 +60,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollment.setClassroom(targetClassroom);
         if (enrollment.getEnrollmentDate() == null) enrollment.setEnrollmentDate(LocalDate.now());
         if (enrollment.getId() == null) {
-            enrollment.setIsActive(true);
             enrollment.setStatus(EnrollmentStatus.ACTIVE);
         } else {
             Enrollment existing = enrollmentRepository.findById(enrollment.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Validation Error: Enrollment does not exist."));
-            enrollment.setIsActive(existing.getIsActive());
             enrollment.setStatus(existing.getStatus());
         }
         return enrollmentRepository.save(enrollment);
@@ -91,7 +89,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             throw new IllegalStateException("Only an active enrollment can be withdrawn.");
         }
         enrollment.setStatus(EnrollmentStatus.WITHDRAWN);
-        enrollment.setIsActive(false);
         enrollmentRepository.save(enrollment);
     }
 }

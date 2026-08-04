@@ -1,6 +1,5 @@
 package com.pirivena_project.pirivena.modal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,12 +38,6 @@ public class EventDetails {
     @ManyToOne(optional = false)
     @JoinColumn(name = "event_category_id")
     private EventCategory eventCategory;
-
-    // Retained only to make the former NOT NULL foreign-key column nullable in
-    // existing databases. It is not part of the event API or workflow anymore.
-    @JsonIgnore
-    @Column(name = "event_status_id")
-    private Integer legacyEventStatusId;
 
     // --- AUDIT TRAIL ---
     @Column(name = "adddate", nullable = false, updatable = false)

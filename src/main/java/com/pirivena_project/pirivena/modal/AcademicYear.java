@@ -27,9 +27,6 @@ public class AcademicYear extends BaseEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate; // Added to lock down academic boundaries cleanly
 
-    @Column(nullable = false)
-    private Boolean isCurrent = false; // The universal active system switch
-
     @Enumerated(EnumType.STRING)
     @Column(name = "lifecycle_status", nullable = false, length = 20)
     private AcademicYearStatus status = AcademicYearStatus.PLANNED;

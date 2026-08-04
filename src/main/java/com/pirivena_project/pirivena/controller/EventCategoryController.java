@@ -2,19 +2,21 @@ package com.pirivena_project.pirivena.controller;
 
 import com.pirivena_project.pirivena.modal.EventCategory;
 import com.pirivena_project.pirivena.repository.EventCategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.pirivena_project.pirivena.service.ReferenceDataNameValidator;
 
 @RestController
 @RequestMapping("/api/event-categories")
+@RequiredArgsConstructor
 public class EventCategoryController {
 
-    @Autowired
-    private EventCategoryRepository categoryRepository;
+    private final EventCategoryRepository categoryRepository;
+    private final ReferenceDataNameValidator nameValidator;
 
     @GetMapping
     public ResponseEntity<List<EventCategory>> getAllCategories() {
@@ -24,17 +26,8 @@ public class EventCategoryController {
     @PostMapping
     public ResponseEntity<EventCategory> createCategory(
             @RequestBody EventCategory category) {
-        if (category == null || category.getName() == null
-                || category.getName().isBlank()) {
-            throw new IllegalArgumentException("Event category name is required.");
-        }
-
-        String normalizedName = category.getName().trim()
-                .replaceAll("\\s+", " ");
-        if (normalizedName.length() > 45) {
-            throw new IllegalArgumentException(
-                    "Event category name must not exceed 45 characters.");
-        }
+        String normalizedName = nameValidator.requiredName(
+                category == null ? null : category.getName(), "Event category", 45);
         if (categoryRepository.existsByNameIgnoreCase(normalizedName)) {
             throw new IllegalArgumentException(
                     "An event category with this name already exists.");

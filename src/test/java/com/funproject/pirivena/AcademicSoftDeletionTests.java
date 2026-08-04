@@ -91,13 +91,11 @@ class AcademicSoftDeletionTests {
         enrollment.setId(4);
         enrollment.setClassroom(classroom);
         enrollment.setStatus(EnrollmentStatus.ACTIVE);
-        enrollment.setIsActive(true);
         when(enrollmentRepository.findById(4)).thenReturn(Optional.of(enrollment));
 
         enrollmentService.cancelEnrollment(4);
 
         assertEquals(EnrollmentStatus.WITHDRAWN, enrollment.getStatus());
-        assertEquals(false, enrollment.getIsActive());
         verify(enrollmentRepository).save(enrollment);
         verify(enrollmentRepository, never()).delete(enrollment);
     }
@@ -107,7 +105,6 @@ class AcademicSoftDeletionTests {
         year.setId(status.ordinal() + 1);
         year.setName(status.name());
         year.setStatus(status);
-        year.setIsCurrent(status == AcademicYearStatus.CURRENT);
         return year;
     }
 }

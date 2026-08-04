@@ -21,9 +21,6 @@ public class Enrollment extends BaseEntity {
     @Column(name = "enrollment_date", nullable = false)
     private LocalDate enrollmentDate; // Added to track historical auditing timestamps
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EnrollmentStatus status = EnrollmentStatus.ACTIVE;
