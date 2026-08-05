@@ -41,6 +41,12 @@ public class PromotionController {
         return ResponseEntity.ok(promotionService.getClassroomHistory(classroomId));
     }
 
+    @DeleteMapping("/{decisionId}")
+    public ResponseEntity<Void> undoPromotion(@PathVariable Integer decisionId) {
+        promotionService.undoPromotion(decisionId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/pending/count")
     @PreAuthorize("hasAnyRole('ADMIN', 'PRINCIPAL', 'VICEPRINCIPAL')")
     public ResponseEntity<Long> getPendingDecisionCount() {

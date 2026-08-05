@@ -63,7 +63,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Load the user and roles from the database.
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails;
+            try {
+                userDetails = this.userDetailsService.loadUserByUsername(username);
+            } catch (RuntimeException exception) {
+                SecurityContextHolder.clearContext();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "This account is no longer available.");
+                return;
+            }
+
+            // Deactivation immediately invalidates tokens that were issued earlier.
+            if (!userDetails.isEnabled()) {
+                SecurityContextHolder.clearContext();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "This account is inactive.");
+                return;
+            }
 
             // Check that the token belongs to this user and is not expired.
             if (jwtUtil.validateToken(jwt, userDetails)) {

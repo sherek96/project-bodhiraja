@@ -3,6 +3,7 @@ package com.pirivena_project.pirivena.service;
 // Purpose: Contains the business rules for promotion operations.
 
 import com.pirivena_project.pirivena.dto.PromotionRequestDTO;
+import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import com.pirivena_project.pirivena.enums.StudentStatus;
 import com.pirivena_project.pirivena.model.Attendance;
 import com.pirivena_project.pirivena.model.Classroom;
@@ -80,6 +81,28 @@ public class PromotionService {
             throw new IllegalArgumentException("Classroom not found.");
         }
         return decisionRepository.findBySourceClassroomIdOrderByDecisionDateDescIdDesc(classroomId);
+    }
+
+    @Transactional
+    public void undoPromotion(Integer decisionId) {
+        PromotionDecision decision = decisionRepository.findById(decisionId)
+                .orElseThrow(() -> new IllegalArgumentException("Promotion decision not found."));
+
+        if ((decision.getOutcome() != PromotionOutcome.PROMOTED
+                && decision.getOutcome() != PromotionOutcome.REPEATING)
+                || decision.getNextAcademicYear() == null
+                || decision.getNextAcademicYear().getStatus() != AcademicYearStatus.PLANNED) {
+            throw new IllegalStateException("Only promotions into a planned academic year can be undone.");
+        }
+
+        Enrollment destinationEnrollment = enrollmentRepository.findByStudentIdAndAcademicYearId(
+                        decision.getStudent().getId(), decision.getNextAcademicYear().getId())
+                .orElseThrow(() -> new IllegalStateException("Destination enrollment was not found."));
+
+        enrollmentRepository.delete(destinationEnrollment);
+        decision.getSourceEnrollment().setStatus(EnrollmentStatus.ACTIVE);
+        enrollmentRepository.save(decision.getSourceEnrollment());
+        decisionRepository.delete(decision);
     }
 
     // Save one student's outcome and apply the related enrollment or status change.

@@ -28,10 +28,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         // 2. Translate and return the database data into Spring's native UserDetails container
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
-                .password(user.getPassword()) // This expects the hashed password from the DB
+                .password(user.getPassword())
+                // Spring Security must know when this account has been deactivated.
+                .disabled(!Boolean.TRUE.equals(user.getIsActive()))
 
-                // Map your roles straight into SimpleGrantedAuthority containers.
-                // Because they already have "ROLE_ADMIN", "ROLE_PRINCIPAL", etc., no modifications are needed!
                 .authorities(user.getRoles().stream()
                         .map(role -> new SimpleGrantedAuthority(role.getName()))
                         .collect(Collectors.toList()))
