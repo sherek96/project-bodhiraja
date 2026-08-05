@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.config;
 
+// Purpose: Makes uploaded profile pictures available through HTTP URLs.
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

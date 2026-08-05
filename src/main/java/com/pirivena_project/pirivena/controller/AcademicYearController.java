@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.AcademicYear;
+// Purpose: Exposes HTTP endpoints for academic year operations.
+
+import com.pirivena_project.pirivena.model.AcademicYear;
 import com.pirivena_project.pirivena.service.AcademicYearService;
 import com.pirivena_project.pirivena.dto.AcademicYearSummaryDTO;
 import lombok.RequiredArgsConstructor;

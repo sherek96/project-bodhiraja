@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.service;
 
-import com.pirivena_project.pirivena.modal.AcademicYear;
+// Purpose: Stops operations that are not allowed for the academic year's current state.
+
+import com.pirivena_project.pirivena.model.AcademicYear;
 import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import org.springframework.stereotype.Component;
 
@@ -36,12 +38,8 @@ public class AcademicYearLifecycleGuard {
         if (year == null) {
             throw new IllegalArgumentException("An academic year is required for this operation.");
         }
-        if (year.getStatus() != null) {
-            return year.getStatus();
-        }
-        return Boolean.TRUE.equals(year.getIsCurrent())
-                ? AcademicYearStatus.CURRENT
-                : AcademicYearStatus.COMPLETED;
+        if (year.getStatus() == null) throw new IllegalStateException("Academic year status is required.");
+        return year.getStatus();
     }
 
     private String yearLabel(AcademicYear year) {

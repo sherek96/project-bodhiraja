@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Guardian;
+// Purpose: Exposes HTTP endpoints for guardian operations.
+
+import com.pirivena_project.pirivena.model.Guardian;
 import com.pirivena_project.pirivena.service.GuardianService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import org.springframework.security.core.Authentication;

@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.dto;
 
+// Purpose: Carries the academic year summary data needed by one API workflow.
+
 import com.pirivena_project.pirivena.enums.AcademicYearStatus;
 import java.time.LocalDate;
 
@@ -9,7 +11,6 @@ public record AcademicYearSummaryDTO(
         LocalDate startDate,
         LocalDate endDate,
         AcademicYearStatus status,
-        Boolean isCurrent,
         long classroomCount,
         long studentCount,
         long subjectCount,

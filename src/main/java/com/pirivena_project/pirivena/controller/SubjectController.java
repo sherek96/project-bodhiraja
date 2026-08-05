@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Subject;
+// Purpose: Exposes HTTP endpoints for subject operations.
+
+import com.pirivena_project.pirivena.model.Subject;
 import com.pirivena_project.pirivena.service.SubjectService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import org.springframework.security.core.Authentication;

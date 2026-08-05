@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Contains the business rules for student operations.
+
 import com.pirivena_project.pirivena.enums.StudentStatus;
-import com.pirivena_project.pirivena.modal.Student;
+import com.pirivena_project.pirivena.model.Student;
 import com.pirivena_project.pirivena.repository.StudentRepository;
 import com.pirivena_project.pirivena.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

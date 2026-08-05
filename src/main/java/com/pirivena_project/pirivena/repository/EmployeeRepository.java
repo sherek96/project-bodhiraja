@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.Employee;
+// Purpose: Reads and writes employee records in the database.
+
+import com.pirivena_project.pirivena.model.Employee;
 import com.pirivena_project.pirivena.enums.EmployeeStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

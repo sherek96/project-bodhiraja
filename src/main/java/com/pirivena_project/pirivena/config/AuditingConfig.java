@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.config;
 
+// Purpose: Enables automatic created-date, updated-date and user audit fields.
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

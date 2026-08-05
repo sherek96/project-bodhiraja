@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.FundingPool;
+// Purpose: Reads and writes funding pool records in the database.
+
+import com.pirivena_project.pirivena.model.FundingPool;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface FundingPoolRepository extends JpaRepository<FundingPool, Integer> {
     // Used to look up a pool by name if needed during validation
     boolean existsByName(String name);
+    Optional<FundingPool> findByNameIgnoreCase(String name);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT f FROM FundingPool f WHERE f.id = :id")

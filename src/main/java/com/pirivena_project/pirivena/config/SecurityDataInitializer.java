@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.config;
 
-import com.pirivena_project.pirivena.modal.Role;
-import com.pirivena_project.pirivena.modal.User;
+// Purpose: Creates the required roles and the initial administrator account when they are missing.
+
+import com.pirivena_project.pirivena.model.Role;
+import com.pirivena_project.pirivena.model.User;
 import com.pirivena_project.pirivena.repository.RoleRepository;
 import com.pirivena_project.pirivena.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

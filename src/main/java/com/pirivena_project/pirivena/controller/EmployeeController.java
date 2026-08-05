@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Employee;
+// Purpose: Exposes HTTP endpoints for employee operations.
+
+import com.pirivena_project.pirivena.model.Employee;
 import com.pirivena_project.pirivena.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

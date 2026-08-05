@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Student;
+// Purpose: Exposes HTTP endpoints for student operations.
+
+import com.pirivena_project.pirivena.model.Student;
 import com.pirivena_project.pirivena.service.StudentService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import org.springframework.security.core.Authentication;

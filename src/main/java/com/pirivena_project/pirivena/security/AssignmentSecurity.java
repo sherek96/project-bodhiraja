@@ -1,15 +1,18 @@
 package com.pirivena_project.pirivena.security;
 
-import com.pirivena_project.pirivena.modal.Attendance;
-import com.pirivena_project.pirivena.modal.Classroom;
-import com.pirivena_project.pirivena.modal.ExamMark;
-import com.pirivena_project.pirivena.modal.User;
-import com.pirivena_project.pirivena.modal.Student;
-import com.pirivena_project.pirivena.modal.Guardian;
-import com.pirivena_project.pirivena.modal.Enrollment;
-import com.pirivena_project.pirivena.modal.Subject;
-import com.pirivena_project.pirivena.modal.LibraryMember;
-import com.pirivena_project.pirivena.modal.BookLending;
+// Purpose: Checks whether the logged-in user may view or change a specific academic or library record.
+
+import com.pirivena_project.pirivena.model.Attendance;
+import com.pirivena_project.pirivena.model.Classroom;
+import com.pirivena_project.pirivena.model.ExamMark;
+import com.pirivena_project.pirivena.model.User;
+import com.pirivena_project.pirivena.model.Student;
+import com.pirivena_project.pirivena.model.Guardian;
+import com.pirivena_project.pirivena.model.Enrollment;
+import com.pirivena_project.pirivena.enums.EnrollmentStatus;
+import com.pirivena_project.pirivena.model.Subject;
+import com.pirivena_project.pirivena.model.LibraryMember;
+import com.pirivena_project.pirivena.model.BookLending;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
 import com.pirivena_project.pirivena.repository.ClassroomSubjectRepository;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
@@ -34,6 +37,11 @@ public class AssignmentSecurity {
         return authentication.getAuthorities().stream().anyMatch(authority ->
                 authority.getAuthority().equals("ROLE_ADMIN") || authority.getAuthority().equals("ROLE_PRINCIPAL")
                         || authority.getAuthority().equals("ROLE_VICEPRINCIPAL"));
+    }
+
+    private boolean librarian(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_LIBRARIAN"));
     }
 
     public boolean canViewSensitiveGuardianData(Authentication authentication) {
@@ -64,7 +72,7 @@ public class AssignmentSecurity {
     public boolean classroomParticipant(Integer classroomId, Authentication authentication) {
         if (classTeacher(classroomId, authentication)) return true;
         Integer studentId = studentId(authentication);
-        return studentId != null && enrollmentRepository.existsByStudentIdAndClassroomIdAndIsActiveTrue(studentId, classroomId);
+        return studentId != null && enrollmentRepository.existsByStudentIdAndClassroomIdAndStatus(studentId, classroomId, EnrollmentStatus.ACTIVE);
     }
 
     public boolean subjectTeacher(Integer classroomId, Integer subjectId, Authentication authentication) {
@@ -78,7 +86,7 @@ public class AssignmentSecurity {
     public boolean subjectParticipant(Integer classroomId, Integer subjectId, Authentication authentication) {
         if (subjectTeacher(classroomId, subjectId, authentication)) return true;
         Integer studentId = studentId(authentication);
-        return studentId != null && enrollmentRepository.existsByStudentIdAndClassroomIdAndIsActiveTrue(studentId, classroomId)
+        return studentId != null && enrollmentRepository.existsByStudentIdAndClassroomIdAndStatus(studentId, classroomId, EnrollmentStatus.ACTIVE)
                 && classroomSubjectRepository.findByClassroomIdAndSubjectId(classroomId, subjectId).isPresent();
     }
 
@@ -111,13 +119,43 @@ public class AssignmentSecurity {
     public List<Classroom> visibleClassrooms(List<Classroom> classrooms, Authentication authentication) {
         if (privileged(authentication)) return classrooms;
         Integer employeeId = employeeId(authentication);
-        if (employeeId != null) return classrooms.stream().filter(classroom -> classroom.getClassTeacher() != null
-                && classroom.getClassTeacher().getId().equals(employeeId)).toList();
+        if (employeeId != null) {
+            var subjectClassroomIds = classroomSubjectRepository.findAll().stream()
+                    .filter(allocation -> allocation.getTeacher() != null
+                            && allocation.getTeacher().getId().equals(employeeId))
+                    .map(allocation -> allocation.getClassroom().getId())
+                    .collect(java.util.stream.Collectors.toSet());
+            return classrooms.stream().filter(classroom -> classroom.getClassTeacher() != null
+                    && classroom.getClassTeacher().getId().equals(employeeId)
+                    || subjectClassroomIds.contains(classroom.getId())).toList();
+        }
         Integer studentId = studentId(authentication);
         if (studentId == null) return List.of();
         var classroomIds = enrollmentRepository.findByStudentId(studentId).stream()
-                .filter(enrollment -> Boolean.TRUE.equals(enrollment.getIsActive()))
+                .filter(enrollment -> enrollment.getStatus() == EnrollmentStatus.ACTIVE)
                 .map(enrollment -> enrollment.getClassroom().getId()).collect(java.util.stream.Collectors.toSet());
+        return classrooms.stream().filter(classroom -> classroomIds.contains(classroom.getId())).toList();
+    }
+
+    public List<Classroom> classTeacherClassrooms(List<Classroom> classrooms, Authentication authentication) {
+        if (privileged(authentication)) return classrooms;
+        Integer employeeId = employeeId(authentication);
+        if (employeeId == null) return studentId(authentication) == null
+                ? List.of() : visibleClassrooms(classrooms, authentication);
+        return classrooms.stream().filter(classroom -> classroom.getClassTeacher() != null
+                && classroom.getClassTeacher().getId().equals(employeeId)).toList();
+    }
+
+    public List<Classroom> subjectTeacherClassrooms(List<Classroom> classrooms, Authentication authentication) {
+        if (privileged(authentication)) return classrooms;
+        Integer employeeId = employeeId(authentication);
+        if (employeeId == null) return studentId(authentication) == null
+                ? List.of() : visibleClassrooms(classrooms, authentication);
+        var classroomIds = classroomSubjectRepository.findAll().stream()
+                .filter(allocation -> allocation.getTeacher() != null
+                        && allocation.getTeacher().getId().equals(employeeId))
+                .map(allocation -> allocation.getClassroom().getId())
+                .collect(java.util.stream.Collectors.toSet());
         return classrooms.stream().filter(classroom -> classroomIds.contains(classroom.getId())).toList();
     }
 
@@ -170,15 +208,17 @@ public class AssignmentSecurity {
     }
 
     public List<LibraryMember> visibleLibraryMembers(List<LibraryMember> members, Authentication authentication) {
+        if (privileged(authentication) || librarian(authentication)) return members;
         Integer ownStudentId = studentId(authentication);
-        if (ownStudentId == null) return members;
+        if (ownStudentId == null) return List.of();
         return members.stream().filter(member -> member.getStudent() != null
                 && member.getStudent().getId().equals(ownStudentId)).toList();
     }
 
     public List<BookLending> visibleBookLendings(List<BookLending> lendings, Authentication authentication) {
+        if (privileged(authentication) || librarian(authentication)) return lendings;
         Integer ownStudentId = studentId(authentication);
-        if (ownStudentId == null) return lendings;
+        if (ownStudentId == null) return List.of();
         return lendings.stream().filter(lending -> lending.getLibraryMember().getStudent() != null
                 && lending.getLibraryMember().getStudent().getId().equals(ownStudentId)).toList();
     }
@@ -204,8 +244,8 @@ public class AssignmentSecurity {
                 .anyMatch(allocation -> allocation.getSubject().getId().equals(requestedId));
     }
 
-    public List<com.pirivena_project.pirivena.modal.ClassroomSubject> visibleClassroomSubjects(
-            List<com.pirivena_project.pirivena.modal.ClassroomSubject> allocations, Authentication authentication) {
+    public List<com.pirivena_project.pirivena.model.ClassroomSubject> visibleClassroomSubjects(
+            List<com.pirivena_project.pirivena.model.ClassroomSubject> allocations, Authentication authentication) {
         if (privileged(authentication)) return allocations;
         Integer ownStudentId = studentId(authentication);
         if (ownStudentId != null) {

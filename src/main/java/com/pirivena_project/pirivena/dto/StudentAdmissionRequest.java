@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.dto;
 
-import com.pirivena_project.pirivena.modal.Student;
+// Purpose: Carries student admission input from the frontend to the backend.
+
+import com.pirivena_project.pirivena.model.Student;
 import lombok.Data;
 
 @Data

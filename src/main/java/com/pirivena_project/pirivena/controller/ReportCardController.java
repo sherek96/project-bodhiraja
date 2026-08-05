@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.controller;
 
+// Purpose: Exposes HTTP endpoints for report card operations.
+
 import com.pirivena_project.pirivena.dto.ReportCardResponseDTO;
 import com.pirivena_project.pirivena.service.ReportCardService;
 import lombok.RequiredArgsConstructor;

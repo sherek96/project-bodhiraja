@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.enums;
 
+// Purpose: Lists the allowed teacher grade values used by the system.
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)

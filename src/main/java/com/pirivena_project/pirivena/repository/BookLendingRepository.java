@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.repository;
-import com.pirivena_project.pirivena.modal.BookLending;
+
+// Purpose: Reads and writes book lending records in the database.
+import com.pirivena_project.pirivena.model.BookLending;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;

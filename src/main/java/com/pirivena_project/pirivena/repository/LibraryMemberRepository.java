@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.repository;
-import com.pirivena_project.pirivena.modal.LibraryMember;
+
+// Purpose: Reads and writes library member records in the database.
+import com.pirivena_project.pirivena.model.LibraryMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Builds the classroom roster with student, attendance, subject and result details.
+
 import com.pirivena_project.pirivena.dto.ClassroomRosterResponse;
-import com.pirivena_project.pirivena.modal.ExamMark;
+import com.pirivena_project.pirivena.model.ExamMark;
 import com.pirivena_project.pirivena.repository.AttendanceRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
 import com.pirivena_project.pirivena.repository.ClassroomSubjectRepository;
@@ -26,6 +28,7 @@ public class ClassroomRosterService {
     private final ClassroomSubjectRepository classroomSubjectRepository;
 
     @Transactional(readOnly = true)
+    // Combine classroom capacity, active enrollments, attendance and recent results.
     public ClassroomRosterResponse getRoster(Integer classroomId) {
         var classroom = classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new IllegalArgumentException("Classroom not found"));
@@ -39,7 +42,7 @@ public class ClassroomRosterService {
                 .sorted(Comparator.comparing(enrollment -> enrollment.getStudent().getFullName(), String.CASE_INSENSITIVE_ORDER))
                 .map(enrollment -> {
                     var attendance = attendanceRepository.findByEnrollmentId(enrollment.getId());
-                    long present = attendance.stream().filter(item -> Boolean.TRUE.equals(item.getIsPresent())).count();
+                    long present = attendance.stream().filter(item -> item.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.PRESENT).count();
                     BigDecimal attendancePercentage = attendance.isEmpty() ? null : BigDecimal.valueOf(present * 100.0 / attendance.size())
                             .setScale(1, RoundingMode.HALF_UP);
                     List<ExamMark> marks = examMarkRepository.findByEnrollmentId(enrollment.getId());
@@ -53,7 +56,7 @@ public class ClassroomRosterService {
                             ? student.getOrdinationName() : student.getFullName();
                     if (displayName == null || displayName.isBlank()) displayName = "Ordination name not provided";
                     return new ClassroomRosterResponse.StudentRosterItem(enrollment.getId(), student.getId(), displayName,
-                            student.getAdmissionNo(), student.getStudentType(), student.getStatus(), enrollment.getIsActive(),
+                            student.getAdmissionNo(), student.getStudentType(), student.getStatus(), enrollment.getStatus() == com.pirivena_project.pirivena.enums.EnrollmentStatus.ACTIVE,
                             enrollment.getStatus(),
                             enrollment.getEnrollmentDate(), attendancePercentage, latestTerm, average, subjects);
                 }).toList();

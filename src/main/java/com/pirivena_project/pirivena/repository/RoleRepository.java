@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.Role;
+// Purpose: Reads and writes role records in the database.
+
+import com.pirivena_project.pirivena.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

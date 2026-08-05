@@ -1,9 +1,11 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Calculates attendance totals and percentages used by the dashboard.
+
 import com.pirivena_project.pirivena.dto.AttendanceDashboardResponse;
 import com.pirivena_project.pirivena.enums.ClassroomStatus;
-import com.pirivena_project.pirivena.modal.Attendance;
-import com.pirivena_project.pirivena.modal.Classroom;
+import com.pirivena_project.pirivena.model.Attendance;
+import com.pirivena_project.pirivena.model.Classroom;
 import com.pirivena_project.pirivena.repository.AcademicYearRepository;
 import com.pirivena_project.pirivena.repository.AttendanceRepository;
 import com.pirivena_project.pirivena.repository.ClassroomRepository;
@@ -28,10 +30,11 @@ public class AttendanceDashboardService {
     private final AssignmentSecurity assignmentSecurity;
 
     @Transactional(readOnly = true)
+    // Build attendance totals for the selected date range and the classrooms this user may view.
     public AttendanceDashboardResponse getSummary(
             LocalDate from, LocalDate to, Authentication authentication) {
         validateRange(from, to);
-        var currentYear = academicYearRepository.findByIsCurrentTrue();
+        var currentYear = academicYearRepository.findByStatus(com.pirivena_project.pirivena.enums.AcademicYearStatus.CURRENT);
         if (currentYear.isEmpty()) return empty(from, to);
 
         List<Classroom> classrooms = assignmentSecurity.visibleClassrooms(
@@ -50,9 +53,9 @@ public class AttendanceDashboardService {
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
             LocalDate day = date;
             long present = records.stream().filter(record -> day.equals(record.getAttendanceDate())
-                    && Boolean.TRUE.equals(record.getIsPresent())).count();
+                    && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.PRESENT).count();
             long absent = records.stream().filter(record -> day.equals(record.getAttendanceDate())
-                    && !Boolean.TRUE.equals(record.getIsPresent())).count();
+                    && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.ABSENT).count();
             weeklyPresent += present;
             weeklyAbsent += absent;
             days.add(new AttendanceDashboardResponse.DailySummary(
@@ -61,9 +64,9 @@ public class AttendanceDashboardService {
 
         LocalDate today = LocalDate.now();
         long todayPresent = records.stream().filter(record -> today.equals(record.getAttendanceDate())
-                && Boolean.TRUE.equals(record.getIsPresent())).count();
+                && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.PRESENT).count();
         long todayAbsent = records.stream().filter(record -> today.equals(record.getAttendanceDate())
-                && !Boolean.TRUE.equals(record.getIsPresent())).count();
+                && record.getStatus() == com.pirivena_project.pirivena.enums.AttendanceStatus.ABSENT).count();
         Set<Integer> submittedIds = new HashSet<>();
         classroomRecords.stream().filter(record -> today.equals(record.getAttendanceDate()))
                 .forEach(record -> submittedIds.add(record.getEnrollment().getClassroom().getId()));
@@ -82,6 +85,7 @@ public class AttendanceDashboardService {
         if (from.plusDays(31).isBefore(to)) throw new IllegalArgumentException("Attendance dashboard range cannot exceed 31 days.");
     }
 
+    // Return a rounded attendance percentage and avoid division by zero.
     private int percentage(long present, long absent) {
         long total = present + absent;
         return total == 0 ? 0 : (int) Math.round(present * 100.0 / total);

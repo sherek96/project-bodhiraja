@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.Student;
+// Purpose: Reads and writes student records in the database.
+
+import com.pirivena_project.pirivena.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

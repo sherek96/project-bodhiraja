@@ -1,6 +1,9 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.Enrollment;
+// Purpose: Reads and writes enrollment records in the database.
+
+import com.pirivena_project.pirivena.model.Enrollment;
+import com.pirivena_project.pirivena.enums.EnrollmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +20,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
             @Param("academicYearId") Integer academicYearId
     );
 
-    @Query("SELECT e FROM Enrollment e WHERE e.student.id = :studentId AND e.classroom.academicYear.id = :academicYearId AND e.isActive = true")
+    @Query("SELECT e FROM Enrollment e WHERE e.student.id = :studentId AND e.classroom.academicYear.id = :academicYearId AND e.status = 'ACTIVE'")
     Optional<Enrollment> findActiveByStudentIdAndAcademicYearId(
             @Param("studentId") Integer studentId,
             @Param("academicYearId") Integer academicYearId
@@ -30,12 +33,12 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     // Checks if a student is already registered in a specific classroom container
     boolean existsByStudentIdAndClassroomId(Integer studentId, Integer classroomId);
 
-    boolean existsByStudentIdAndClassroomIdAndIsActiveTrue(Integer studentId, Integer classroomId);
+    boolean existsByStudentIdAndClassroomIdAndStatus(Integer studentId, Integer classroomId, EnrollmentStatus status);
 
-    List<Enrollment> findByClassroomAcademicYearIdAndIsActiveTrue(Integer academicYearId);
+    List<Enrollment> findByClassroomAcademicYearIdAndStatus(Integer academicYearId, EnrollmentStatus status);
 
-    boolean existsByStudentIdAndIsActiveTrueAndClassroomAcademicYearStartDateAfter(Integer studentId, LocalDate startDate);
+    boolean existsByStudentIdAndStatusAndClassroomAcademicYearStartDateAfter(Integer studentId, EnrollmentStatus status, LocalDate startDate);
 
-    long countByClassroomAcademicYearIdAndIsActiveTrue(Integer academicYearId);
-    long countByClassroomIdAndIsActiveTrue(Integer classroomId);
+    long countByClassroomAcademicYearIdAndStatus(Integer academicYearId, EnrollmentStatus status);
+    long countByClassroomIdAndStatus(Integer classroomId, EnrollmentStatus status);
 }

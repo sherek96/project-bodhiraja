@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.PromotionDecision;
+// Purpose: Reads and writes promotion decision records in the database.
+
+import com.pirivena_project.pirivena.model.PromotionDecision;
 import com.pirivena_project.pirivena.enums.PromotionOutcome;
 import org.springframework.data.jpa.repository.JpaRepository;
 

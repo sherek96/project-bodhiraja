@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Validates, stores, replaces and removes uploaded profile pictures.
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +17,7 @@ import java.util.UUID;
 public class ProfilePictureStorageService {
     private static final Set<String> IMAGE_TYPES = Set.of("image/jpeg", "image/png", "image/webp");
 
+    // Validate the image, replace the previous file and return its stored filename.
     public String save(MultipartFile file, String previousPicture, String directoryName) {
         if (file == null || file.isEmpty()) throw new RuntimeException("Select a profile picture to upload");
         if (file.getSize() > 5 * 1024 * 1024) throw new RuntimeException("Profile picture must not exceed 5 MB");

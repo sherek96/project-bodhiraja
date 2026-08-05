@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.dto;
 
+// Purpose: Carries the promotion request data needed by one API workflow.
+
 import lombok.Data;
 import java.util.List;
 import java.time.LocalDate;

@@ -1,8 +1,10 @@
 package com.pirivena_project.pirivena.service;
 
-import com.pirivena_project.pirivena.modal.EventDetails;
-import com.pirivena_project.pirivena.modal.FundingPool;
-import com.pirivena_project.pirivena.modal.TransactionExpense;
+// Purpose: Contains the business rules for transaction expense operations.
+
+import com.pirivena_project.pirivena.model.EventDetails;
+import com.pirivena_project.pirivena.model.FundingPool;
+import com.pirivena_project.pirivena.model.TransactionExpense;
 import com.pirivena_project.pirivena.repository.EventDetailsRepository;
 import com.pirivena_project.pirivena.repository.FundingPoolRepository;
 import com.pirivena_project.pirivena.repository.TransactionExpenseRepository;

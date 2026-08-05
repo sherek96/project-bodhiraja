@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Provides the database user linked to the current login.
+
 import com.pirivena_project.pirivena.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

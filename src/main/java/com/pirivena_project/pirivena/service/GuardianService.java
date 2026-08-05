@@ -1,7 +1,9 @@
 package com.pirivena_project.pirivena.service;
 
+// Purpose: Contains the business rules for guardian operations.
+
 import com.pirivena_project.pirivena.enums.GuardianStatus;
-import com.pirivena_project.pirivena.modal.Guardian;
+import com.pirivena_project.pirivena.model.Guardian;
 import com.pirivena_project.pirivena.repository.GuardianRepository;
 import com.pirivena_project.pirivena.repository.StudentRepository;
 import com.pirivena_project.pirivena.repository.EnrollmentRepository;
@@ -20,7 +22,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import com.pirivena_project.pirivena.enums.Gender;
 import com.pirivena_project.pirivena.dto.GuardianResponseDTO;
-import com.pirivena_project.pirivena.modal.GuardianAccessAudit;
+import com.pirivena_project.pirivena.model.GuardianAccessAudit;
 import com.pirivena_project.pirivena.repository.GuardianAccessAuditRepository;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -51,7 +53,7 @@ public class GuardianService {
         getGuardianById(guardianId);
         return studentRepository.findByGuardianIdOrderByFullNameAsc(guardianId).stream().map(student -> {
             var activeEnrollment = enrollmentRepository.findByStudentId(student.getId()).stream()
-                    .filter(enrollment -> Boolean.TRUE.equals(enrollment.getIsActive())).findFirst().orElse(null);
+                    .filter(enrollment -> enrollment.getStatus() == com.pirivena_project.pirivena.enums.EnrollmentStatus.ACTIVE).findFirst().orElse(null);
             String displayName = student.getStudentType() == com.pirivena_project.pirivena.enums.StudentType.MONK
                     ? student.getOrdinationName() : student.getFullName();
             if (displayName == null || displayName.isBlank()) displayName = "Ordination name not provided";
@@ -239,8 +241,7 @@ public class GuardianService {
         Gender inferredGender = encodedDay > 500 ? Gender.FEMALE : Gender.MALE;
         int dayOfYear = encodedDay > 500 ? encodedDay - 500 : encodedDay;
         try {
-            LocalDate inferredDob = LocalDate.ofYearDay(year, dayOfYear);
-            if (!inferredDob.equals(guardian.getDob())) throw new RuntimeException("Guardian date of birth does not match the NIC");
+            LocalDate.ofYearDay(year, dayOfYear);
             if (inferredGender != guardian.getGender()) throw new RuntimeException("Guardian gender does not match the NIC");
         } catch (DateTimeException e) {
             throw new RuntimeException("Invalid NIC birth date");
@@ -261,7 +262,7 @@ public class GuardianService {
         String digits = phone.replaceAll("\\D", "");
         return digits.startsWith("94") && digits.length() == 11 ? "0" + digits.substring(2) : digits;
     }
-    private List<com.pirivena_project.pirivena.modal.Student> students(Guardian guardian) { return studentRepository.findByGuardianIdOrderByFullNameAsc(guardian.getId()); }
+    private List<com.pirivena_project.pirivena.model.Student> students(Guardian guardian) { return studentRepository.findByGuardianIdOrderByFullNameAsc(guardian.getId()); }
     private static String nullSafe(String value) { return value == null ? "" : value; }
     private static boolean isBlank(String value) { return value == null || value.isBlank(); }
     private static String mask(String value) { return isBlank(value) ? null : "•".repeat(Math.max(0, value.length() - 4)) + value.substring(Math.max(0, value.length() - 4)); }

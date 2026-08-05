@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.Classroom;
+// Purpose: Exposes HTTP endpoints for classroom operations.
+
+import com.pirivena_project.pirivena.model.Classroom;
 import com.pirivena_project.pirivena.service.ClassroomService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import com.pirivena_project.pirivena.service.ClassroomRosterService;
@@ -34,6 +36,18 @@ public class ClassroomController {
     public ResponseEntity<List<Classroom>> getAllClassrooms(Authentication authentication) {
         List<Classroom> classrooms = classroomService.getAllClassrooms();
         return ResponseEntity.ok(assignmentSecurity.visibleClassrooms(classrooms, authentication));
+    }
+
+    @GetMapping("/assigned/class-teacher")
+    public ResponseEntity<List<Classroom>> getClassTeacherClassrooms(Authentication authentication) {
+        return ResponseEntity.ok(assignmentSecurity.classTeacherClassrooms(
+                classroomService.getAllClassrooms(), authentication));
+    }
+
+    @GetMapping("/assigned/subject-teacher")
+    public ResponseEntity<List<Classroom>> getSubjectTeacherClassrooms(Authentication authentication) {
+        return ResponseEntity.ok(assignmentSecurity.subjectTeacherClassrooms(
+                classroomService.getAllClassrooms(), authentication));
     }
 
     // 3. Fetch classrooms for a specific academic year (Incredibly helpful for dashboard dropdown sorting)

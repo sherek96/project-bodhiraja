@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.dto;
 
+// Purpose: Carries the report card response data needed by one API workflow.
+
 import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;

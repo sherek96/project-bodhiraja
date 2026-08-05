@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.repository;
 
-import com.pirivena_project.pirivena.modal.TransactionExpense;
+// Purpose: Reads and writes transaction expense records in the database.
+
+import com.pirivena_project.pirivena.model.TransactionExpense;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

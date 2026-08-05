@@ -1,6 +1,8 @@
 package com.pirivena_project.pirivena.controller;
 
-import com.pirivena_project.pirivena.modal.ClassroomSubject;
+// Purpose: Exposes HTTP endpoints for classroom subject operations.
+
+import com.pirivena_project.pirivena.model.ClassroomSubject;
 import com.pirivena_project.pirivena.service.ClassroomSubjectService;
 import com.pirivena_project.pirivena.security.AssignmentSecurity;
 import org.springframework.security.core.Authentication;

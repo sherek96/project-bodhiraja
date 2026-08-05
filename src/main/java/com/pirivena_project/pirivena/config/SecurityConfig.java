@@ -1,5 +1,9 @@
 package com.pirivena_project.pirivena.config;
 
+// Purpose: Defines login rules, endpoint permissions and password encryption.
+
+import com.pirivena_project.pirivena.security.CustomUserDetailsService;
+import com.pirivena_project.pirivena.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,21 +60,25 @@ public class SecurityConfig {
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/users/me", "/api/users/profile/update").authenticated()
                         .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
-                        .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "LIBRARIAN")
-                        .requestMatchers("/api/employees/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
-                        .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "LIBRARIAN", "STUDENT")
-                        .requestMatchers("/api/students/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER")
+                        .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "LIBRARIAN")
+                        .requestMatchers("/api/employees/**").hasAnyRole("ADMIN", "PRINCIPAL")
+                        .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "LIBRARIAN")
+                        .requestMatchers("/api/students/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
                         .requestMatchers("/api/student-admissions/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
-                        .requestMatchers(HttpMethod.GET, "/api/guardians/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "STUDENT")
-                        .requestMatchers("/api/guardians/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER")
-                        .requestMatchers(HttpMethod.GET, "/api/academic-years/**", "/api/subjects/**", "/api/enrollments/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/guardians/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
+                        .requestMatchers("/api/guardians/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
+                        .requestMatchers(HttpMethod.GET, "/api/academic-years/**", "/api/subjects/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER")
+                        .requestMatchers(HttpMethod.GET, "/api/enrollments/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "STUDENT")
                         .requestMatchers("/api/academic-years/**", "/api/subjects/**", "/api/enrollments/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
-                        .requestMatchers(HttpMethod.GET, "/api/classrooms/**", "/api/classroom-subjects/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/classrooms/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/classroom-subjects/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER")
                         .requestMatchers("/api/classrooms/**", "/api/classroom-subjects/**", "/api/promotions/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")
-                        .requestMatchers("/api/attendances/**", "/api/exam-marks/**", "/api/report-cards/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "STUDENT")
+                        .requestMatchers("/api/attendances/**", "/api/exam-marks/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER")
+                        .requestMatchers("/api/report-cards/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "STUDENT")
                         .requestMatchers(HttpMethod.GET, "/api/funding-pools/**", "/api/income-categories/**").hasAnyRole("ADMIN", "PRINCIPAL", "LIBRARIAN")
                         .requestMatchers("/api/funding-pools/**", "/api/incomes/**", "/api/expenses/**", "/api/income-categories/**", "/api/expense-categories/**").hasAnyRole("ADMIN", "PRINCIPAL")
-                        .requestMatchers(HttpMethod.GET, "/api/books/**", "/api/book-categories/**", "/api/library-members/**", "/api/book-lendings/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "LIBRARIAN", "STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/books/**", "/api/book-categories/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "LIBRARIAN", "STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/library-members/**", "/api/book-lendings/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "LIBRARIAN")
                         .requestMatchers("/api/books/**", "/api/book-categories/**", "/api/library-members/**", "/api/book-lendings/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "LIBRARIAN")
                         .requestMatchers(HttpMethod.GET, "/api/events/**", "/api/event-categories/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL", "TEACHER", "LIBRARIAN", "STUDENT")
                         .requestMatchers("/api/events/**", "/api/event-categories/**").hasAnyRole("ADMIN", "PRINCIPAL", "VICEPRINCIPAL")

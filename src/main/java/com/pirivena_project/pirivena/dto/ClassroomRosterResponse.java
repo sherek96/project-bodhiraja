@@ -1,5 +1,7 @@
 package com.pirivena_project.pirivena.dto;
 
+// Purpose: Carries classroom roster results from the backend to the frontend.
+
 import com.pirivena_project.pirivena.enums.StudentStatus;
 import com.pirivena_project.pirivena.enums.StudentType;
 import com.pirivena_project.pirivena.enums.EnrollmentStatus;
